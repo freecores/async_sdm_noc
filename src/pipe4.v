@@ -65,7 +65,8 @@ module pipe4(/*AUTOARG*/
    // generate the input ack
    assign ia = o0|o1|o2|o3;
 
-endmodule
+endmodule // pipe4
+
 
 
 

@@ -17,4 +17,4 @@
  
 */
 
-// currently VC router do not have any configurable structure variables
+// currently VC router does not have any configurable structure variables

@@ -13,7 +13,7 @@
  
  References
  * Lookahead pipelines 
-     Montek Singh and Steven M. Nowick}, The design of high-performance dynamic asynchronous pipelines: lookahead style, IEEE Transactions on Very Large Scale Integration (VLSI) Systems, 2007(15), 1256-1269. doi:10.1109/TVLSI.2007.902205
+     Montek Singh and Steven M. Nowick, The design of high-performance dynamic asynchronous pipelines: lookahead style, IEEE Transactions on Very Large Scale Integration (VLSI) Systems, 2007(15), 1256-1269. doi:10.1109/TVLSI.2007.902205
  * Channel slicing
      Wei Song and Doug Edwards, A low latency wormhole router for asynchronous on-chip networks, Asia and South Pacific Design Automation Conference, 2010, 437-443.
  

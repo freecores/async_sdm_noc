@@ -12,6 +12,10 @@
  Output buffer for Wormhole/SDM routers.
  *** SystemVerilog is used ***
  
+ References
+ * Lookahead pipelines 
+     Montek Singh and Steven M. Nowick}, The design of high-performance dynamic asynchronous pipelines: lookahead style, IEEE Transactions on Very Large Scale Integration (VLSI) Systems, 2007(15), 1256-1269. doi:10.1109/TVLSI.2007.902205
+ 
  History:
  26/05/2009  Initial version. <wsong83@gmail.com>
  20/09/2010  Supporting channel slicing and SDM using macro difinitions. <wsong83@gmail.com>

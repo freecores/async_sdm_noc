@@ -25,9 +25,9 @@
 
 module mrma (/*AUTOARG*/
    // Outputs
-   IMa, CMr, cfg,
+   ca, ra, cfg,
    // Inputs
-   IMr, CMa, CMs, rst_n
+   c, r, rst_n
    );
    
    // parameters

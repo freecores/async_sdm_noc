@@ -108,4 +108,5 @@ module mrma (/*AUTOARG*/
       end
    endgenerate
    
-endmodule // im_arb
+endmodule // mrma
+

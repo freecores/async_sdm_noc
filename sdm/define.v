@@ -20,6 +20,16 @@
 // if VCN > 1, set ENABLE_CLOS to use the 2-stage Clos switch for less switching area
 `define ENABLE_CLOS
 
+// Using the asynchronous virsion of the Concurrent round-robine dispatching
+// algorithm for the 2-stage Clos can save some area but introduce a 5%
+// throughput loss
+// `define ENABLE_CRRD
+
+// for the SDM router using crossbars and the Clos router using CRRD
+// algorithm, using the multi-resource match arbiter may save the area in
+// switch allocators
+// `define ENABLE_MRMA
+
 // set to enable channel slicing for fast data paths
 `define ENABLE_CHANNEL_SLICING
 

@@ -16,7 +16,7 @@
  28/05/2009  Initial version. <wsong83@gmail.com>
  23/09/2010  Supporting channel slicing and SDM using macro difinitions. <wsong83@gmail.com>
  22/10/2010  Parameterize the number of pipelines in output buffers. <wsong83@gmail.com>
- 23/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 25/05/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
@@ -489,7 +489,8 @@ module router(/*AUTOARG*/
 	  .nreq  ( nreq    ), 
 	  .lreq  ( lreq    ), 
 	  .wreq  ( wreq    ), 
-	  .ereq  ( ereq    )
+	  .ereq  ( ereq    ),
+	  .rst_n ( rst_n   )
 	  );
 `endif
 

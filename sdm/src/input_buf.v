@@ -169,12 +169,12 @@ module inp_buf (/*AUTOARG*/
        );
 
    // keep the routing decision until the tail flit is received by all sub-channels
-   c2p C_RTD0  ( .a1(raw_dec[0]),      .a0((~frame_end)&rst_n),    .q(dec_reg[0]));
-   c2p C_RTD1  ( .a1(raw_dec[1]),      .a0((~frame_end)&rst_n),    .q(dec_reg[1]));
-   c2p C_RT_XEQ (.a1(raw_dec[2]),      .a0((~frame_end)&rst_n),    .q(x_equal) );
-   c2p C_RTD2  ( .a1(raw_dec[3]),      .a0(x_equal),               .q(dec_reg[2]));
-   c2p C_RTD3  ( .a1(raw_dec[4]),      .a0(x_equal),               .q(dec_reg[3]));
-   c2p C_RTD4  ( .a1(raw_dec[5]),      .a0(x_equal),               .q(dec_reg[4]));
+   c2p C_RTD0  ( .b(raw_dec[0]),      .a((~frame_end)&rst_n),    .q(dec_reg[0]));
+   c2p C_RTD1  ( .b(raw_dec[1]),      .a((~frame_end)&rst_n),    .q(dec_reg[1]));
+   c2p C_RT_XEQ (.b(raw_dec[2]),      .a((~frame_end)&rst_n),    .q(x_equal) );
+   c2p C_RTD2  ( .b(raw_dec[3]),      .a(x_equal),               .q(dec_reg[2]));
+   c2p C_RTD3  ( .b(raw_dec[4]),      .a(x_equal),               .q(dec_reg[3]));
+   c2p C_RTD4  ( .b(raw_dec[5]),      .a(x_equal),               .q(dec_reg[4]));
 
    // generate the arbiter request signals
    assign arb_r = 

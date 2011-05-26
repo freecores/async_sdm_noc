@@ -19,7 +19,7 @@ set rm_lib_dirs         "../../lib"
 
 set rm_library         "Nangate_typ.db"
 
-set search_path         [concat ${search_path} "${rm_lib_dirs}/"]
+set search_path         [concat ${search_path} "${rm_lib_dirs}/" ".."]
 
 set synthetic_library   dw_foundation.sldb
 set link_library        [list *]

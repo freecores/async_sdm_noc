@@ -79,7 +79,7 @@ module c2p (a, b, q);
 endmodule
 
 // 2-input MUTEX cell, Nangate
-module mutex ( a, b, qa, qb );	// !!! dont touch !!!
+module mutex2 ( a, b, qa, qb );	// !!! dont touch !!!
 
    input a, b;			// request inputs
    output qa, qb;		// grant outputs
@@ -120,7 +120,7 @@ module tarb ( ngnt, ntgnt, req, treq );
    wire  n1, n2;		// internal wires
    wire [1:0] mgnt;		// outputs of the MUTEX
 
-   mutex ME ( .a(req[0]), .b(req[1]), .qa(mgnt[0]), .qb(mgnt[1]) );
+   mutex2 ME ( .a(req[0]), .b(req[1]), .qa(mgnt[0]), .qb(mgnt[1]) );
    c2n C0 ( .a(ntgnt), .b(n2), .q(ngnt[0]) );
    c2n C1 ( .a(ntgnt), .b(n1), .q(ngnt[1]) );
    nand U1 (treq, n1, n2);

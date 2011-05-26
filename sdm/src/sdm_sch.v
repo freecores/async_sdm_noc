@@ -29,7 +29,7 @@ module sdm_sch (/*AUTOARG*/
    // Outputs
    sack, wack, nack, eack, lack, scfg, ncfg, wcfg, ecfg, lcfg,
    // Inputs
-   sreq, nreq, lreq, wreq, ereq
+   sreq, nreq, lreq, wreq, ereq, rst_n
    );
    
    parameter VCN = 2;		// the number of virtual circuits per port

@@ -15,7 +15,7 @@
  History:
  05/05/2009  Initial version. <wsong83@gmail.com>
  17/04/2011  Replace the common ack generation. <wsong83@gmail.com>
- 23/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 26/05/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
@@ -41,12 +41,12 @@ module pipe4(/*AUTOARG*/
    output 	     ia;	// output ack
 
 `ifdef ENABLE_EOF
-   input 	     o4;	// the eof bit
-   output 	     i4;
+   output 	     o4;	// the eof bit
+   input 	     i4;
 `endif
    
    // internal signals
-   wire [2*SCN-2:0]    tack;
+   wire [SCN-1:0]    tack;
    
    // generate the ack line
    genvar       i;
@@ -61,7 +61,7 @@ module pipe4(/*AUTOARG*/
 
    // the eof bit
 `ifdef ENABLE_EOF
-   dc2 DD_DC4 (.d(i4),  .a(oa[SCN-1]),  .q(o4));
+   dc2 DD_DC4 (.d(i4),  .a(oa),  .q(o4));
 `endif
 
    // generate the input ack

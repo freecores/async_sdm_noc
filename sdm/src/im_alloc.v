@@ -86,9 +86,9 @@ module im_alloc (/*AUTOARG*/
       for(i=0; i<VCN; i++) begin: IPC
 	 for(j=0; j<CMN; j++) begin: OPC
  `ifdef ENABLE_CRRD
-	    IPr[i][j] = |IMr[i];
+	    assign IPr[i][j] = |IMr[i];
  `else
-	    IPr[i][j] = |IPrm[i][j];
+	    assign IPr[i][j] = |IPrm[i][j];
 	    for(k=0; k<SN; k++) begin: DIRC
 	       c2p IPRen (.q(IPrm[i][j][k]), .a0(IMr[i][k]), .a1(~CMs[j][k]));
 	    end

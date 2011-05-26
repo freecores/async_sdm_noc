@@ -46,7 +46,7 @@ module tree_arb (/*AUTOARG*/
 	end
       else if(MR == 2)		// special case: only two input
 	begin: MA_2
-	   mutex ME0 (
+	   mutex2 ME0 (
 		      .a    ( req[0]    ),
 		      .b    ( req[1]    ),
 		      .qa   ( gnt[0]    ),
@@ -56,7 +56,7 @@ module tree_arb (/*AUTOARG*/
       else
 	begin: MA_N
 
-	   mutex ME0 (
+	   mutex2 ME0 (
 		      .a    ( mreq[0]   ),
 		      .b    ( mreq[1]   ),
 		      .qa   ( rgnt[0]   ),

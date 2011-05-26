@@ -403,7 +403,7 @@ module router(/*AUTOARG*/
 	  );
 `else  // Crossbar based SDM
 
-   crossbar #(.VCN(VCN), .VCW(DW))
+   dcb_xy #(.VCN(VCN), .VCW(DW))
    CB (
        .so0     ( c2s0      ), 
        .so1     ( c2s1      ), 

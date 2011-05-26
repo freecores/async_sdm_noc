@@ -45,9 +45,9 @@ module mrma (/*AUTOARG*/
 
    wire [M-1:0][N-1:0] 	 hs;	// match results
    wire [M-1:0][N-1:0]   blk;	// blockage
-   wire [N-1:0][M-1:0]   cblk;	// shuffled blockage
-   wire [M-1:0] 	 rblk;	// resource blockage
-   wire [N-1:0] 	 cblk;	// client blockage
+   wire [N-1:0][M-1:0]   sblk;	// shuffled blockage
+   wire [M-1:0] 	 rbi;	// resource blockage
+   wire [N-1:0] 	 cbi;	// client blockage
    wire [N-1:0] 	 cg, cm; // client requests
    wire [M-1:0] 	 rg, rm; // resource requests
    
@@ -82,7 +82,7 @@ module mrma (/*AUTOARG*/
 		      );
 	    
 	    // shuffle the blockage
-	    assign cblk[j][i] = blk[i][j];
+	    assign sblk[j][i] = blk[i][j];
 
 	    // shuffle the configuration
 	    assign scfg[j][i] = cfg[i][j];
@@ -97,12 +97,12 @@ module mrma (/*AUTOARG*/
       for(i=0; i<M; i++) begin: RB
 	 assign rbi[i] = (|blk[i]) & rst_n;
 	 and AND_RG (rm[i], r[i], ~ra[i], rst_n);
-	 ra[i] = |cfg[i];
+	 assign ra[i] = |cfg[i];
       end
 
       // combine the column blockage and generate input requests
       for(j=0; j<N; j++) begin: CB
-	 assign cbi[j] = (|cblk[j]) & rst_n;
+	 assign cbi[j] = (|sblk[j]) & rst_n;
 	 and AND_CG (cm[j], c[j], ~ca[j], rst_n);
 	 assign ca[j] = |scfg[j];
       end

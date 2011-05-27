@@ -21,7 +21,7 @@
  10/06/2010  Change to use PIM structure <wsong83@gmail.com>
  23/08/2010  Fix the non-QDI request withdraw process <wsong83@gmail.com>
  23/09/2010  Modified for Clos SDM router <wsong83@gmail.com>
- 25/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 27/05/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
@@ -88,7 +88,7 @@ module clos_sch (/*AUTOARG*/
 	 .ira  ( cmra[0]   ),
 	 .oreq ( sr        ),
 	 .ora  ( sra       ),
-	 .gnt  ( imc[0]    )
+	 .cfg  ( imc[0]    )
 	 );
 
    // the C-element to force the request withdrawal sequence
@@ -113,7 +113,7 @@ module clos_sch (/*AUTOARG*/
 	 .ira  ( cmra[1]   ),
 	 .oreq ( wr        ),
 	 .ora  ( wra       ),
-	 .gnt  ( imc[1]    )
+	 .cfg  ( imc[1]    )
 	 );
 
    generate for(i=0; i<N; i++) begin: WA
@@ -137,7 +137,7 @@ module clos_sch (/*AUTOARG*/
 	 .ira  ( cmra[2]   ),
 	 .oreq ( nr        ),
 	 .ora  ( nra       ),
-	 .gnt  ( imc[2]    )
+	 .cfg  ( imc[2]    )
 	 );
 
    generate for(i=0; i<N; i++) begin: NA
@@ -161,7 +161,7 @@ module clos_sch (/*AUTOARG*/
 	 .ira  ( cmra[3]   ),
 	 .oreq ( er        ),
 	 .ora  ( era       ),
-	 .gnt  ( imc[3]    )
+	 .cfg  ( imc[3]    )
 	 );
 
    generate for(i=0; i<N; i++) begin: EA
@@ -185,7 +185,7 @@ module clos_sch (/*AUTOARG*/
 	 .ira  ( cmra[4]   ),
 	 .oreq ( lr        ),
 	 .ora  ( lra       ),
-	 .gnt  ( imc[4]    )
+	 .cfg  ( imc[4]    )
 	 );
 
    generate for(i=0; i<N; i++) begin: LA

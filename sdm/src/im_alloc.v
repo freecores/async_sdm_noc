@@ -22,7 +22,7 @@
  05/11/2009  Speed up the arbiter. <wsong83@gmail.com>
  10/06/2010  [Major] change to use PIM structure. <wsong83@gmail.com>
  23/08/2010  Fix the non-QDI request withdraw process. <wsong83@gmail.com>
- 25/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 27/05/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
@@ -86,9 +86,9 @@ module im_alloc (/*AUTOARG*/
       for(i=0; i<VCN; i++) begin: IPC
 	 for(j=0; j<CMN; j++) begin: OPC
  `ifdef ENABLE_CRRD
-	    IPr[i][j] = |IMr[i];
+	    assign IPr[i][j] = |IMr[i];
  `else
-	    IPr[i][j] = |IPrm[i][j];
+	    assign IPr[i][j] = |IPrm[i][j];
 	    for(k=0; k<SN; k++) begin: DIRC
 	       c2p IPRen (.q(IPrm[i][j][k]), .a0(IMr[i][k]), .a1(~CMs[j][k]));
 	    end
@@ -118,6 +118,9 @@ module im_alloc (/*AUTOARG*/
 	 assign IPr[i] = |IMr[i];
       end
    endgenerate
+   
+   assign OPrst_n[0] = rst_n;
+   
 `endif // !`ifndef ENABLE_MRMA
    
 endmodule // im_alloc

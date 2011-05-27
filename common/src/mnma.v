@@ -27,7 +27,7 @@
 
 module mnma(/*AUTOARG*/
    // Outputs
-   cfg,
+   ra, cfg,
    // Inputs
    r
    );
@@ -35,6 +35,7 @@ module mnma(/*AUTOARG*/
    parameter M = 2;		// number of resources
 
    input [N-1:0][M-1:0]       r;	// input requests
+   output [N-1:0] 	      ra;	// ack to input requests
    output [M-1:0][N-1:0]      cfg;	// configuration to the crssbar
 
    wire [M-1:0][N-1:0] 	      OPr;
@@ -66,6 +67,9 @@ module mnma(/*AUTOARG*/
 	    .req    ( IPr[i]  ),
 	    .gnt    ( IPg[i]  )
 	    );
+
+	 // the input ack
+	 assign ra[i] = |IPg[i];
       end
    endgenerate
 

@@ -37,7 +37,7 @@ module mutex_arb (/*AUTOARG*/
    generate 
       for(i=0; i<wd; i=i+1) begin:lv
          for(j=i+1; j<wd; j=j+1) begin:b
-            mutex ME ( .a(arb_w[i][j-1]),     .b(arb_w[j][i]),  .qa(arb_w[i][j]),     .qb(arb_w[j][i+1]));
+            mutex2 ME ( .a(arb_w[i][j-1]),     .b(arb_w[j][i]),  .qa(arb_w[i][j]),     .qb(arb_w[j][i+1]));
          end
          assign arb_w[i][0] = req[i];
          assign gnt[i] = arb_w[i][wd-1];

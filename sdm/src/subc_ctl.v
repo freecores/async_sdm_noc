@@ -52,12 +52,12 @@ module subc_ctl (/*AUTOARG*/
    wire   acken;		// active low ack enable
    
 `ifdef ENABLE_LOOKAHEAD
-   c2n CD (.q(acko), .a0(ai2cb), .a1(ack)); // the C2N gate to avoid early withdrawal
+   c2n CD (.q(acko), .a(ai2cb), .b(ack)); // the C2N gate to avoid early withdrawal
 `else
    assign acko = ai2cb;
 `endif
    
-   c2p  CEN  (.a1(eof), .a0(acko), .q(fend));
+   c2p  CEN  (.b(eof), .a(acko), .q(fend));
    c2   C    (.a0(rt_ra), .a1(fend), .q(csc));
    nand U1   ( acken, rt_ra, ~csc);
    nor  U2   ( rt_rst, fend, ~csc);

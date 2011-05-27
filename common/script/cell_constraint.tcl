@@ -13,7 +13,7 @@
 # 
 # History:
 # 03/07/2009  Initial version. <wsong83@gmail.com>
-# 21/05/2011  Change to the Nangate cell library. <wsong83@gmail.com>
+# 27/05/2011  Change to the Nangate cell library. <wsong83@gmail.com>
 
 set_dont_touch mutex2
 set_dont_touch delay
@@ -75,6 +75,13 @@ foreach_in_collection celln  [get_references -hierarchical cr_blk_*] {
 }                                                                   
 # It is not a problem if MRMA is not used in the design.
 
+# mrma multi-resource match arbiter
+foreach_in_collection celln  [get_references -hierarchical mrma_*] {
+    set_disable_timing [get_object_name $celln]/*.AND_*G* -from B -to Z
+    set_disable_timing [get_object_name $celln]/*.AND_RG* -from A -to Z
+}                                                                   
+# It is not a problem if MRMA is not used in the design.
+
 # dcb data crossbar
 foreach_in_collection celln  [get_references -hierarchical dcb_*] {
     set_disable_timing [get_object_name $celln]/*.A* -from B -to Z                               
@@ -85,3 +92,9 @@ foreach_in_collection celln  [get_references -hierarchical rcb_*] {
     set_disable_timing [get_object_name $celln]/*.A* -from B -to Z                               
 }                                                                   
 #It is not a problem if there is no rcb modules in the design.
+
+# mnmr m-n match allocator
+foreach_in_collection celln  [get_references -hierarchical mnma_*] {
+    set_disable_timing [get_object_name $celln]/*.AND_OPRen* -from B -to Z                               
+}                                                                   
+#It is not a problem if MNMA is not used in the design.

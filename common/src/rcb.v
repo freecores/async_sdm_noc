@@ -15,7 +15,7 @@
  History:
  10/12/2009  Initial version. <wsong83@gmail.com>
  23/05/2011  Use SystemVerilog for wire declaration. <wsong83@gmail.com>
- 23/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 27/05/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
@@ -33,11 +33,11 @@ module rcb (/*AUTOARG*/
    input [NN-1:0][DW-1:0]     ireq; // input requests
    output [NN-1:0] 	      ira;  // ack for input requests
    output [MN-1:0][DW-1:0]    oreq; // output requests
-   input [DW-1:0] 	      ora;  // ack for output requests
+   input [MN-1:0] 	      ora;  // ack for output requests
    input [MN-1:0][NN-1:0]     cfg;  // the crossbar configuration
    
-   wire [MN-1:0][DW-1:0][NN-1-1:0] m; // the internal wires for requests
-   wire [NN-1:0][MN-1:0] 	   ma; // the internal wires for acks
+   wire [MN-1:0][DW-1:0][NN-1:0] m; // the internal wires for requests
+   wire [NN-1:0][MN-1:0] 	 ma; // the internal wires for acks
  
    // generate variable
    genvar 		      i, j, k;
@@ -45,8 +45,8 @@ module rcb (/*AUTOARG*/
    // request matrix
    generate
       for (i=0; i<MN; i++) begin: EN
-	 for (j=0; j<DW; j=j+1) begin: SC
-	    for (k=0; k<NN; k=k+1) begin: IP
+	 for (j=0; j<DW; j++) begin: SC
+	    for (k=0; k<NN; k++) begin: IP
 	       and AC (m[i][j][k], ireq[k][j], cfg[i][k]);
 	    end
 	    
@@ -58,8 +58,8 @@ module rcb (/*AUTOARG*/
 
    // ack matrix
    generate
-      for (k=0; k<NN; k=k+1) begin: ENA
-	 for (i=0; i<MN; i=i+1) begin: OP
+      for (k=0; k<NN; k++) begin: ENA
+	 for (i=0; i<MN; i++) begin: OP
 	    and AC (ma[k][i], ora[i], cfg[i][k]);
 	 end
 	 

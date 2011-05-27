@@ -19,7 +19,7 @@
  History:
  05/09/2009  Initial version. <wsong83@gmail.com>
  05/11/2009  Speed up the arbiter. <wsong83@gmail.com>
- 24/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 27/05/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
@@ -88,7 +88,7 @@ module mrma (/*AUTOARG*/
 	    assign scfg[j][i] = cfg[i][j];
 	    
 	    // store the match results
-	    c2p  C (.q(cfg[i][j]), .a0(c[j]), .a1(hs[i][j]));
+	    c2p  C (.q(cfg[i][j]), .a(c[j]), .b(hs[i][j]));
 	 
 	 end // block: Clm
       end // block: Row

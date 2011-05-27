@@ -18,7 +18,7 @@
   
  History:
  28/09/2009  Initial version. <wsong83@gmail.com>
- 25/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 27/05/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
@@ -229,13 +229,15 @@ module sdm_sch (/*AUTOARG*/
    generate
       for(i=0; i<VCN; i++) begin: OPC
 	 delay DLY ( .q(OPrst_n[i+1]), .a(OPrst_n[i])); // dont touch
-	 assign SOPrdy[i] = (~SOPblk[i])&SOPrst_n[i+1];
-	 assign WOPrdy[i] = (~WOPblk[i])&WOPrst_n[i+1];
-	 assign NOPrdy[i] = (~NOPblk[i])&NOPrst_n[i+1];
-	 assign EOPrdy[i] = (~EOPblk[i])&EOPrst_n[i+1];
-	 assign LOPrdy[i] = (~LOPblk[i])&LOPrst_n[i+1];
+	 assign SOPrdy[i] = (~SOPblk[i])&OPrst_n[i+1];
+	 assign WOPrdy[i] = (~WOPblk[i])&OPrst_n[i+1];
+	 assign NOPrdy[i] = (~NOPblk[i])&OPrst_n[i+1];
+	 assign EOPrdy[i] = (~EOPblk[i])&OPrst_n[i+1];
+	 assign LOPrdy[i] = (~LOPblk[i])&OPrst_n[i+1];
       end
    endgenerate
+
+   assign OPrst_n[0] = rst_n;
    
 `endif // !`ifndef ENABLE_MRMA
    

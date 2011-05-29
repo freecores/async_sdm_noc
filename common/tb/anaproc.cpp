@@ -9,7 +9,7 @@
  
  License: LGPL 3.0 or later
  
- The SystemC to keep a module of the simulation analysis object. 
+ The SystemC class to keep a module of the simulation analysis object. 
  
  History:
  27/02/2011  Initial version. <wsong83@gmail.com>

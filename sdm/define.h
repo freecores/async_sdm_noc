@@ -25,7 +25,7 @@
 
 // channel bandwidth
 const unsigned int ChBW = 1;	    // the data width of a single virtual circuit in unit of bytes
-const unsigned int SubChN = 4;	    // the number of virtual circuits or VCs per direction
+const unsigned int SubChN = 1;	    // the number of virtual circuits or VCs per direction
 const unsigned int FSIZE_MAX = 512; // the longest frame has 512 bytes of  data
 
 const unsigned int DIMX = 4;	// the X size of the mesh network
@@ -44,5 +44,8 @@ extern sim_ana * ANA;		// declaration of the global simulation analysis module
 
 typedef pdu_flit<ChBW> FLIT;	// define the template of flit
 typedef pdu_frame<ChBW> FRAME;	// define the template of frame
+
+// Channel Slicing will alter the port format
+// #define ENABLE_CHANNEL_CLISING
 
 #endif

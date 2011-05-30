@@ -15,14 +15,14 @@
  20/08/2008  Initial version. <wsong83@gmail.com>
  30/09/2010  Use template style packet definition. <wsong83@gmail.com>
  16/10/2010  Support SDM. <wsong83@gmail.com>
- 29/05/2011  CLean up for opensource. <wsong83@gmail.com>
+ 30/05/2011  CLean up for opensource. <wsong83@gmail.com>
 
 */
 
 #ifndef NETWORK_ADAPTER_H_
 #define NETWORK_ADAPTER_H_
 
-#include "noc_define.h"
+#include "define.h"
 #include <systemc.h>
 
 SC_MODULE(Network_Adapter)

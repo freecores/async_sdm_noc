@@ -14,14 +14,14 @@
    
  History:
  26/02/2011  Initial version. <wsong83@gmail.com>
- 29/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 30/05/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
 #ifndef NETNODE_H_
 #define NETNODE_H_
 
-#include "noc_define.h"
+#include "define.h"
 #include <systemc.h>
 #include "ni.h"
 #include "procelem.h"

@@ -18,6 +18,7 @@
  21/09/2010  Support VC and use templates. <wsong83@gmail.com>
  19/11/2010  Fixed to support the minimal 8bit VC. <wsong83@gmail.com>
  27/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 30/05/2011  Clear the addresses field when clear a flit. <wsong83@gmail.com>
  
 */
 
@@ -99,6 +100,8 @@ public:
       vcn = 0;
       prio = 0;
       ftype = F_IDLE;
+      addrx = 0;
+      addry = 0;
       for(unsigned int i=0; i<BW; i++) data[i] = 0;
     }
 

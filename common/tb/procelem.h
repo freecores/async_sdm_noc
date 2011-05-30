@@ -13,20 +13,20 @@
  
  History:
  26/02/2011  Initial version. <wsong83@gmail.com>
- 28/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 30/05/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
 #ifndef PROCELEM_H_
 #define PROCELEM_H_
 
-#include "noc_define.h"
+#include "define.h"
 #include <systemc.h>
 
 
 // a function to generate random numbers comply with an exponential distribution with expection exp
-double rand_exp(double exp) {
-  unsigned int rint = rand()%1e6;
+double rand_exponential(double exp) {
+  unsigned int rint = rand() % (unsigned int)(1e6);
   double rdat = rint * 1.0 / 1e6;
   return (-1 * exp * log(rint));
 }

@@ -56,9 +56,8 @@ compile -boundary_optimization
 define_name_rules verilog -allowed "A-Za-z0-9_" -first_restricted "\\"
 change_name -rules verilog -hierarchy
 
-write -format verilog -hierarchy -out file/${current_design}_syn.v $current_design
-write_sdf -significant_digits 5 file/${current_design}.sdf
-write_sdc file/${current_design}.sdc
+write -format verilog -hierarchy -out file/router_syn.v $current_design
+write_sdf -significant_digits 5 file/router.sdf
 
 report_constraints -verbose
 

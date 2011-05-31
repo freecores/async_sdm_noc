@@ -12,7 +12,7 @@
 # currently using the Nangate 45nm cell lib.
 # 
 # History:
-# 26/05/2009  Initial version. <wsong83@gmail.com>
+# 31/05/2009  Initial version. <wsong83@gmail.com>
 
 set rm_top router
 set rm_para "VCN=>1, DW=>8, IPD=>1, OPD=>1"
@@ -36,6 +36,7 @@ source script/source.tcl
 
 # elaborate the design
 elaborate ${rm_top} -parameters ${rm_para}
+rename_design ${current_design} router
 
 link
 
@@ -56,8 +57,8 @@ compile -boundary_optimization
 define_name_rules verilog -allowed "A-Za-z0-9_" -first_restricted "\\"
 change_name -rules verilog -hierarchy
 
-write -format verilog -hierarchy -out file/router_syn.v $current_design
-write_sdf -significant_digits 5 file/router.sdf
+write -format verilog -hierarchy -out file/${current_design}_syn.v $current_design
+write_sdf -significant_digits 5 file/${current_design}.sdf
 
 report_constraints -verbose
 

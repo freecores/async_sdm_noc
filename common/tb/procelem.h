@@ -13,7 +13,7 @@
  
  History:
  26/02/2011  Initial version. <wsong83@gmail.com>
- 30/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 31/05/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
@@ -28,7 +28,7 @@
 double rand_exponential(double exp) {
   unsigned int rint = rand() % (unsigned int)(1e6);
   double rdat = rint * 1.0 / 1e6;
-  return (-1 * exp * log(rint));
+  return (-1.0 * exp * log(rdat));
 }
 
 class ProcElem : public sc_module {

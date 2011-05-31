@@ -20,10 +20,10 @@
 `timescale 1ns/1ps
 
 module noctb;
-   parameter DW = 16;		// the data width of a single virtual circuit
-   parameter VCN = 2;		// the number of virtual circuits per direction
+   parameter DW = 8;		// the data width of a single virtual circuit
+   parameter VCN = 1;		// the number of virtual circuits per direction
    parameter DIMX = 4;		// the X dimension
-   parameter DIMY = 3;		// the Y dimension
+   parameter DIMY = 4;		// the Y dimension
    
    reg rst_n;
    

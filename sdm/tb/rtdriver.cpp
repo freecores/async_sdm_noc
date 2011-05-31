@@ -14,7 +14,7 @@
  History:
  27/04/2010  Initial version. <wsong83@gmail.com>
  16/10/2010  Support SDM. <wsong83@gmail.com>
- 30/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 31/05/2011  Remove the sc_unit datatype to support data width larger than 64. <wsong83@gmail.com>
  
 */
 
@@ -194,6 +194,9 @@ void RTDriver::recv() {
 
   bool is_hd = true;		// the current flit is a header flit
   
+  // initialize the ack signal
+  rtoa.write(mack);
+
   while(true) {
     // clear the flit
     mflit.clear();

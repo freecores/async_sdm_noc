@@ -44,10 +44,10 @@ void RTDriver::IPdetect() {
   // read the ack
 #ifdef ENABLE_CHANNEL_CLISING
   ack_lv_high = rtia.read().and_reduce();
-  ack_lv_high = rtia.read().or_reduce();
+  ack_lv_low = rtia.read().or_reduce();
 #else
   ack_lv_high = rtia.read();
-  ack_lv_high = rtia.read();  
+  ack_lv_low = rtia.read();  
 #endif  
 
   if(ack_lv_high.is_01() && ack_lv_high.to_bool())
@@ -67,7 +67,7 @@ void RTDriver::OPdetect() {
   data_lv_low = data_lv.or_reduce();
 #else
   data_lv = rtod[0].read() | rtod[1].read() | rtod[2].read() | rtod[3].read();
-  data_lv_high = data_lv.and_reduce() & rtod4.read();
+  data_lv_high = data_lv.and_reduce() | rtod4.read();
   data_lv_low = data_lv.or_reduce() | rtod4.read();
 #endif
 
@@ -248,7 +248,7 @@ void RTDriver::recv() {
 	  dd[1] = mdata[1][i*4+j]; 
 	  dd[2] = mdata[2][i*4+j]; 
 	  dd[3] = mdata[3][i*4+j];
-	  mflit[i-1] |= c1o42b(dd.to_uint()) << j;
+	  mflit[i-1] |= c1o42b(dd.to_uint()) << j*2;
 	}
       }
     } else if (mflit.ftype != F_TL) {
@@ -259,7 +259,7 @@ void RTDriver::recv() {
 	  dd[1] = mdata[1][i*4+j]; 
 	  dd[2] = mdata[2][i*4+j]; 
 	  dd[3] = mdata[3][i*4+j];
-	  mflit[i] |= c1o42b(dd.to_uint()) << j;
+	  mflit[i] |= c1o42b(dd.to_uint()) << j*2;
 	}
       } 
     }

@@ -24,6 +24,7 @@ CXXFLAG="-c -g -Wall -I../../common/tb -I../tb -I../"
 # remove the files from last run
 rm -fr INCA_libs
 rm *.o
+rm *.so
 
 # compile verilog files
 # cell library

@@ -170,7 +170,7 @@ void RTDriver::send() {
       wait(0.2, SC_NS);		// a delay to avoid data override
     
       // clear the eof
-      rtid4.write(~mdata4);
+      rtid4.write(mdata4);
 
       // wait for the input port be ready again
       wait(rtinp_sig.negedge_event());

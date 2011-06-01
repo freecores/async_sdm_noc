@@ -34,7 +34,7 @@ const unsigned int FLEN = 64;	// the payload size of a frame in unit of bytes
 
 const unsigned int BufDepth = 1; // the depth of the input buffer (only useful in VC routers to determine the inital tokens in output ports)
 
-const double FFreq = 0.1;	// Node injection rate, in unit of MFlit/second
+const double FFreq = 0.1;	// Node injection rate, in unit of MFlit/second, 0 means the maximal inject rate
 
 const double Record_Period = 1e3 * 1e3;	// the interval of recording the average performance to log files, in unit of ps
 const double Warm_UP = 0e4 * 1e3;	// the warm up time of performance analysis, in unit of ps

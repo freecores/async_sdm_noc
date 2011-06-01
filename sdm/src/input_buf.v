@@ -24,7 +24,8 @@
  05/05/2009  Initial version. <wsong83@gmail.com>
  20/09/2010  Supporting channel slicing and SDM using macro difinitions. <wsong83@gmail.com>
  24/05/2011  Clean up for opensource. <wsong83@gmail.com>
- 
+ 01/06/2011  Use the comp4 common comparator rather than the chain_comparator defined in this module. <wsong83@gmail.com>
+  
 */
 
 // the router structure definitions
@@ -250,10 +251,10 @@ module routing_decision (
    wire [2:0] 	   x_cmp [1:0];
    wire [2:0] 	   y_cmp [1:0];
 
-   chain_comparator X0 ( .a(pipe_xd[3:0]), .b(addrx[3:0]), .q(x_cmp[0]));
-   chain_comparator X1 ( .a(pipe_xd[7:4]), .b(addrx[7:4]), .q(x_cmp[1]));
-   chain_comparator Y0 ( .a(pipe_yd[3:0]), .b(addry[3:0]), .q(y_cmp[0]));
-   chain_comparator Y1 ( .a(pipe_yd[7:4]), .b(addry[7:4]), .q(y_cmp[1]));
+   comp4 X0 ( .a(pipe_xd[3:0]), .b(addrx[3:0]), .q(x_cmp[0]));
+   comp4 X1 ( .a(pipe_xd[7:4]), .b(addrx[7:4]), .q(x_cmp[1]));
+   comp4 Y0 ( .a(pipe_yd[3:0]), .b(addry[3:0]), .q(y_cmp[0]));
+   comp4 Y1 ( .a(pipe_yd[7:4]), .b(addry[7:4]), .q(y_cmp[1]));
 
    assign decision[0] = x_cmp[1][0] | (x_cmp[1][2]&x_cmp[0][0]);       // frame x > addr x
    assign decision[1] = x_cmp[1][1] | (x_cmp[1][2]&x_cmp[0][1]);       // frame x < addr x
@@ -263,26 +264,3 @@ module routing_decision (
    assign decision[5] = y_cmp[1][2] & y_cmp[0][2];                     // frame y = addr y
 
 endmodule // routing_decision
-
-
-// the 1-of-4 comparator
-module chain_comparator (
-     a
-    ,b
-    ,q
-    );
-
-   input   [3:0]   a;
-   input [3:0] 	   b;
-   output [2:0]    q;
-
-   // a > b
-   assign q[0] = (a[3]&(|b[2:0])) | (a[2]&(|b[1:0])) | (a[1]&(|b[0:0]));
-
-   // a < b
-   assign q[1] = (a[2]&(|b[3:3])) | (a[1]&(|b[3:2])) | (a[0]&(|b[3:1]));
-
-   // a = b
-   assign q[2] = (a[3]&b[3]) | (a[2]&b[2]) | (a[1]&b[1]) | (a[0]&b[0]);
-
-endmodule // chain_comparator

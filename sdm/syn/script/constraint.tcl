@@ -41,7 +41,7 @@ foreach_in_collection celln  [get_references -hierarchical inp_buf_*] {
 # the delay cell in the lookahead pipeline
 # It is not a problem to get errors here if ENABLE_LOOKAHEAD is not defined.
 foreach_in_collection celln  [get_references -hierarchical outp_buf_*] {
-    set_disable_timing [get_object_name $celln]/DLY/U -from A -to Z
+    set_disable_timing [get_object_name $celln]/*DLY/U -from A -to Z
 }
 
 # set some timing path ending points
@@ -61,8 +61,8 @@ set IOAO [filter [get_ports *o*] "@port_direction == in"]
 
 # set the timing constraints for data paths and ack paths
 # For better speed performance, please tune these delay and factors according different cell libraries
-set DATA_dly 5
-set ACK_dly 8
+set DATA_dly 1.0
+set ACK_dly 1.6
 
 set_max_delay [expr ${DATA_dly} * 1.00] -from ${DPA}   -to ${DPD}   -group G_DATA
 set_max_delay [expr ${ACK_dly} * 1.00]  -from ${DPA}   -to ${DPA}   -group G_ACK

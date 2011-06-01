@@ -16,7 +16,7 @@
  05/05/2009  Initial version. <wsong83@gmail.com>
  20/05/2011  Change to general verilog description for opensource. 
              The Nangate cell library is used. <wsong83@gmail.com>
- 
+ 01/06/2011  The bugs in the C2 and C2P1 gates are fixed. <wsong83@gmail.com>
 */
 
 // General 2-input C-element
@@ -30,7 +30,7 @@ module c2 (a0, a1, q);
    nand U1 (m[0], a0, a1);
    nand U2 (m[1], a0, q);
    nand U3 (m[2], a1, q);
-   assign q = &m;
+   assign q = ~&m;
    
 endmodule
 
@@ -46,7 +46,7 @@ module dc2 (d, a, q);
    nand U1 (m[0], a, d);
    nand U2 (m[1], d, q);
    nand U3 (m[2], a, q);
-   assign q = &m;
+   assign q = ~&m;
 
 endmodule
 
@@ -105,7 +105,7 @@ module c2p1 (a0, a1, b, q);
    nand U1 (m[0], a0, a1, b);
    nand U2 (m[1], a0, q);
    nand U3 (m[2], a1, q);
-   assign q = &m;
+   assign q = ~&m;
 
 endmodule                    
 

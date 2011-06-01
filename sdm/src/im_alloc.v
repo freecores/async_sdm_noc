@@ -90,7 +90,7 @@ module im_alloc (/*AUTOARG*/
  `else
 	    assign IPr[i][j] = |IPrm[i][j];
 	    for(k=0; k<SN; k++) begin: DIRC
-	       c2p IPRen (.q(IPrm[i][j][k]), .a0(IMr[i][k]), .a1(~CMs[j][k]));
+	       c2p IPRen (.q(IPrm[i][j][k]), .a(IMr[i][k]), .b(~CMs[j][k]));
 	    end
  `endif
 	 end

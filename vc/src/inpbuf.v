@@ -132,16 +132,16 @@ module inpbuf (/*AUTOARG*/
 	    for(gsub=0; gsub<SCN; gsub++) begin:SC
 	       pipe4 #(.DW(2)) 
 	       DP (
-		   .dia ( vcdad[gbd][gvc][gsub]  ), 
-		   .do0 ( vcd0[gbd+1][gvc][gsub] ), 
-		   .do1 ( vcd1[gbd+1][gvc][gsub] ),
-		   .do2 ( vcd2[gbd+1][gvc][gsub] ), 
-		   .do3 ( vcd3[gbd+1][gvc][gsub] ), 
-		   .di0 ( vcd0[gbd][gvc][gsub]   ),
-		   .di1 ( vcd1[gbd][gvc][gsub]   ), 
-		   .di2 ( vcd2[gbd][gvc][gsub]   ),
-		   .di3 ( vcd3[gbd][gvc][gsub]   ),
-		   .doa ( vcdadn[gbd+1][gvc][gsub] )
+		   .ia ( vcdad[gbd][gvc][gsub]  ), 
+		   .o0 ( vcd0[gbd+1][gvc][gsub] ), 
+		   .o1 ( vcd1[gbd+1][gvc][gsub] ),
+		   .o2 ( vcd2[gbd+1][gvc][gsub] ), 
+		   .o3 ( vcd3[gbd+1][gvc][gsub] ), 
+		   .i0 ( vcd0[gbd][gvc][gsub]   ),
+		   .i1 ( vcd1[gbd][gvc][gsub]   ), 
+		   .i2 ( vcd2[gbd][gvc][gsub]   ),
+		   .i3 ( vcd3[gbd][gvc][gsub]   ),
+		   .oa ( vcdadn[gbd+1][gvc][gsub] )
 		   );
 	       assign vcdadn[gbd+1][gvc][gsub] = (~vcdad[gbd+1][gvc][gsub])&rstn;
 	    end // block: SC
@@ -177,16 +177,16 @@ module inpbuf (/*AUTOARG*/
 	    for(gsub=0; gsub<SCN; gsub++) begin:SC
 	       pipe4 #(.DW(2)) 
 	       DP (
-		   .dia ( vcdad[gbd][gvc][gsub]    ),
-		   .do0 ( vcd0[gbd+1][gvc][gsub]   ),
-		   .do1 ( vcd1[gbd+1][gvc][gsub]   ),
-		   .do2 ( vcd2[gbd+1][gvc][gsub]   ), 
-		   .do3 ( vcd3[gbd+1][gvc][gsub]   ), 
-		   .di0 ( vcd0[gbd][gvc][gsub]     ),
-		   .di1 ( vcd1[gbd][gvc][gsub]     ), 
-		   .di2 ( vcd2[gbd][gvc][gsub]     ),
-		   .di3 ( vcd3[gbd][gvc][gsub]     ),
-		   .doa ( vcdadn[gbd+1][gvc][gsub] )
+		   .ia ( vcdad[gbd][gvc][gsub]    ),
+		   .o0 ( vcd0[gbd+1][gvc][gsub]   ),
+		   .o1 ( vcd1[gbd+1][gvc][gsub]   ),
+		   .o2 ( vcd2[gbd+1][gvc][gsub]   ), 
+		   .o3 ( vcd3[gbd+1][gvc][gsub]   ), 
+		   .i0 ( vcd0[gbd][gvc][gsub]     ),
+		   .i1 ( vcd1[gbd][gvc][gsub]     ), 
+		   .i2 ( vcd2[gbd][gvc][gsub]     ),
+		   .i3 ( vcd3[gbd][gvc][gsub]     ),
+		   .oa ( vcdadn[gbd+1][gvc][gsub] )
 		   );
 	       assign vcdadn[gbd+1][gvc][gsub] = (~vcdad[gbd+1][gvc][gsub])&rstn;
 	    end // block: SC

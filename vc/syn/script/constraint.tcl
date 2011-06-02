@@ -25,6 +25,18 @@ set_ungroup ALLOC false
 
 ######### break the timing loops in the design ##############
 
+# the cross points in the VCA
+foreach_in_collection celln  [get_references -hierarchical RCBB_*] {
+    set_disable_timing [get_object_name $celln]/I1 -from B -to Z
+    set_disable_timing [get_object_name $celln]/I0/U1 -from B -to Z
+    set_disable_timing [get_object_name $celln]/I0/U3 -from A -to Z
+    set_disable_timing [get_object_name $celln]/I3/U1 -from A -to Z
+    set_disable_timing [get_object_name $celln]/I3/U2 -from A -to Z
+
+}                                                                   
+
+set_disable_timing [get_cells ALLOC/*VCAO*] -from A -to Z
+
 # set some timing path ending points
 set DPD []
 set DPA []

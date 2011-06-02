@@ -22,6 +22,7 @@ analyze -format verilog   ../../common/src/mutex_arb.v
 analyze -format sverilog  ../../common/src/pipe4.v
 analyze -format sverilog  ../../common/src/pipen.v
 analyze -format verilog   ../../common/src/tree_arb.v
+analyze -format verilog   ../../common/src/comp4.v
 
 # the private code of wormhole/SDM routers
 analyze -format sverilog  ../src/cpipe.v

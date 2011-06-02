@@ -86,16 +86,16 @@ module outpbuf (/*AUTOARG*/
       for(gsub=0; gsub<SCN; gsub++) begin:SC
 	 pipe4 #(.DW(2))
 	 L0D (
-	      .dia ( diad[gsub]   ), 
-	      .do0 ( do0[gsub]    ), 
-	      .do1 ( do1[gsub]    ),
-	      .do2 ( do2[gsub]    ),
-	      .do3 ( do3[gsub]    ),
-	      .di0 ( di0[gsub]    ),
-	      .di1 ( di1[gsub]    ), 
-	      .di2 ( di2[gsub]    ),
-	      .di3 ( di3[gsub]    ),
-	      .doa ( doan[gsub]   )
+	      .ia ( diad[gsub]   ), 
+	      .o0 ( do0[gsub]    ), 
+	      .o1 ( do1[gsub]    ),
+	      .o2 ( do2[gsub]    ),
+	      .o3 ( do3[gsub]    ),
+	      .i0 ( di0[gsub]    ),
+	      .i1 ( di1[gsub]    ), 
+	      .i2 ( di2[gsub]    ),
+	      .i3 ( di3[gsub]    ),
+	      .oa ( doan[gsub]   )
 	      );
 	 assign doan[gsub] = (~doa)&rstn;
       end // block: SC

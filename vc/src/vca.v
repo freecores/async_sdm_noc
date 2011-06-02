@@ -243,7 +243,7 @@ module vcalloc (/*AUTOARG*/
    endgenerate
    
    // the requests crossbar
-   rcb #(.VCN(VCN))
+   rcb_vc #(.VCN(VCN))
    RSW (
 	.ro    ( {losr, eosr, nosr, wosr, sosr} ),
 	.srt   ( sswa                           ),

@@ -12,6 +12,7 @@
 # 
 # History:
 # 26/05/2011  Initial version. <wsong83@gmail.com>
+# 02/06/2011  Use separated comp4 file. <wsong83@gmail.com>
 
 # the common verilog source files between VC and SDM
 analyze -format verilog   ../../common/src/cell_lib.v
@@ -25,6 +26,7 @@ analyze -format verilog   ../../common/src/mutex_arb.v
 analyze -format sverilog  ../../common/src/pipe4.v
 analyze -format sverilog  ../../common/src/rcb.v
 analyze -format verilog   ../../common/src/tree_arb.v
+analyze -format verilog   ../../common/src/comp4.v
 
 # the private code of wormhole/SDM routers
 analyze -format sverilog  ../src/clos_sch.v

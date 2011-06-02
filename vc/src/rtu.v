@@ -72,16 +72,16 @@ module rtu (/*AUTOARG*/
    
    pipe4 #(.DW(8))
    L0D (
-	.dia ( p0ad   ), 
-	.do0 ( p1d0   ), 
-	.do1 ( p1d1   ),
-	.do2 ( p1d2   ), 
-	.do3 ( p1d3   ), 
-	.di0 ( di0    ),
-	.di1 ( di1    ), 
-	.di2 ( di2    ),
-	.di3 ( di3    ),
-	.doa ( p0den  )
+	.ia ( p0ad   ), 
+	.o0 ( p1d0   ), 
+	.o1 ( p1d1   ),
+	.o2 ( p1d2   ), 
+	.o3 ( p1d3   ), 
+	.i0 ( di0    ),
+	.i1 ( di1    ), 
+	.i2 ( di2    ),
+	.i3 ( di3    ),
+	.oa ( p0den  )
 	);
 
    pipen #(.DW(VCN))

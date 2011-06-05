@@ -13,8 +13,9 @@
  
  History:
  20/09/2009  Initial version. <wsong83@gmail.com>
- 23/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 05/06/2011  Clean up for opensource. <wsong83@gmail.com>
  
 */
 
-// currently VC router does not have any configurable structure variables
+// Whether use the MRMA instead of MNMA allocators in the VC allocator
+// `define ENABLE_MRMA

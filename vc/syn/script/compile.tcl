@@ -15,7 +15,7 @@
 # 31/05/2009  Initial version. <wsong83@gmail.com>
 
 set rm_top router
-set rm_para "VCN=>2, DW=>8, PD=>2"
+set rm_para "VCN=>2, DW=>8, PD=>1"
 
 # working directory
 if {[file exists work ] && [file isdirectory work ]} {

@@ -25,7 +25,7 @@
 
 // channel bandwidth
 const unsigned int ChBW = 1;	    // the data width of a single virtual circuit in unit of bytes
-const unsigned int SubChN = 1;	    // the number of virtual circuits or VCs per direction
+const unsigned int SubChN = 2;	    // the number of virtual circuits or VCs per direction
 const unsigned int FSIZE_MAX = 512; // the longest frame has 512 bytes of  data
 
 const unsigned int DIMX = 4;	// the X size of the mesh network

@@ -22,14 +22,14 @@ module rtu (/*AUTOARG*/
    // Outputs
    dia, dort,
    // Inputs
-   rstn, di0, di1, di2, di3, dit, divc, addrx, addry, doa
+   rst_n, di0, di1, di2, di3, dit, divc, addrx, addry, doa
    );
    parameter VCN = 2;
    parameter DIR = 0;
    parameter SN = 4;
    parameter PD = 2;
 
-   input            rstn;
+   input            rst_n;
    input [3:0]      di0, di1, di2, di3;
    input [2:0] 	    dit;
    input [VCN-1:0]  divc;
@@ -124,7 +124,7 @@ module rtu (/*AUTOARG*/
    // p2 -> L -> p3
 
    c2 CP2A  ( .a0(p2ad), .a1(p2avc), .q(p2a));
-   assign p2an = (~p2a) & rstn;
+   assign p2an = (~p2a) & rst_n;
 
    pipen #(.DW(SN))
    L2R (
@@ -152,7 +152,7 @@ module rtu (/*AUTOARG*/
 	 .d_out_a ( pda[0])
 	 );
 
-   assign p3an = (~p3a) & rstn;
+   assign p3an = (~p3a) & rst_n;
 
    // pd pipeline
    generate
@@ -165,7 +165,7 @@ module rtu (/*AUTOARG*/
 	       .d_out   ( pd[gbd+1][gvc]   ),
 	       .d_out_a ( pdan[gbd+1][gvc] )
 	       );
-	    assign pdan[gbd+1][gvc] = (~pda[gbd+1][gvc])&rstn;
+	    assign pdan[gbd+1][gvc] = (~pda[gbd+1][gvc])&rst_n;
 	 end
       end // block: RT
    endgenerate

@@ -27,7 +27,7 @@ module router (/*AUTOARG*/
    si0, si1, si2, si3, wi0, wi1, wi2, wi3, ni0, ni1, ni2, ni3, ei0,
    ei1, ei2, ei3, li0, li1, li2, li3, sift, wift, nift, eift, lift,
    sivc, wivc, nivc, eivc, livc, sica, wica, nica, eica, lica, soa,
-   woa, noa, eoa, loa, soc, woc, noc, eoc, loc, addrx, addry, rstn
+   woa, noa, eoa, loa, soc, woc, noc, eoc, loc, addrx, addry, rst_n
    );
 
    parameter VCN = 2;		// number of VCs per direction
@@ -65,7 +65,7 @@ module router (/*AUTOARG*/
    // local address, in 1-of-4 format
    input [7:0] 	      addrx, addry;
    // active-low reset
-   input 	      rstn;
+   input 	      rst_n;
 
    //----------------------------------
    // input to crossbar
@@ -129,7 +129,7 @@ module router (/*AUTOARG*/
 	.swrt  ( siswrt  ), 
 	.addrx ( addrx   ), 
 	.addry ( addry   ),
-	.rstn  ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    // west input buffer
@@ -157,7 +157,7 @@ module router (/*AUTOARG*/
 	.swrt  ( wiswrt  ), 
 	.addrx ( addrx   ), 
 	.addry ( addry   ),
-	.rstn  ( rstn    )
+	.rst_n ( rst_n   )
 	);
    
    // north input buffer
@@ -185,7 +185,7 @@ module router (/*AUTOARG*/
 	.swrt  ( niswrt  ), 
 	.addrx ( addrx   ), 
 	.addry ( addry   ),
-	.rstn  ( rstn    )
+	.rst_n ( rst_n   )
 	);
    
    // east input buffer
@@ -213,7 +213,7 @@ module router (/*AUTOARG*/
 	.swrt  ( eiswrt  ), 
 	.addrx ( addrx   ), 
 	.addry ( addry   ),
-	.rstn  ( rstn    )
+	.rst_n ( rst_n   )
 	);
    
    // local input buffer
@@ -241,7 +241,7 @@ module router (/*AUTOARG*/
 	.swrt  ( liswrt  ), 
 	.addrx ( addrx   ), 
 	.addry ( addry   ),
-	.rstn  ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    // south output buffer
@@ -264,7 +264,7 @@ module router (/*AUTOARG*/
 	.doa   ( soa     ), 
 	.credit( soc     ), 
 	.vcr   ( soswr   ), 
-	.rstn  ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    // west output buffer
@@ -287,7 +287,7 @@ module router (/*AUTOARG*/
 	.doa   ( woa     ), 
 	.credit( woc     ), 
 	.vcr   ( woswr   ), 
-	.rstn  ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    // north output buffer
@@ -310,7 +310,7 @@ module router (/*AUTOARG*/
 	.doa   ( noa     ), 
 	.credit( noc     ), 
 	.vcr   ( noswr   ), 
-	.rstn  ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    // east output buffer
@@ -333,7 +333,7 @@ module router (/*AUTOARG*/
 	.doa   ( eoa     ), 
 	.credit( eoc     ), 
 	.vcr   ( eoswr   ), 
-	.rstn  ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    // east output buffer
@@ -356,7 +356,7 @@ module router (/*AUTOARG*/
 	.doa   ( loa     ), 
 	.credit( loc     ), 
 	.vcr   ( loswr   ), 
-	.rstn  ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    // VC allocator
@@ -392,7 +392,7 @@ module router (/*AUTOARG*/
 	  .nosa    ( noswa   ), 
 	  .eosa    ( eoswa   ), 
 	  .losa    ( loswa   ), 
-	  .rstn    ( rstn    )
+	  .rst_n   ( rst_n   )
 	  );
 
    // crossbar

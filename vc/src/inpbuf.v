@@ -24,7 +24,7 @@ module inpbuf (/*AUTOARG*/
    dia, cor, do0, do1, do2, do3, dot, dortg, vcr, swr,
    // Inputs
    di0, di1, di2, di3, dit, divc, coa, doa, vcra, swrt, addrx, addry,
-   rstn
+   rst_n
    );
 
    parameter DW = 32;		// data width
@@ -64,7 +64,7 @@ module inpbuf (/*AUTOARG*/
    // local addresses
    input [7:0] 		    addrx, addry;
 
-   input 		    rstn;
+   input 		    rst_n;
 
    //-----------------------------		    
    // VC_MUX
@@ -117,12 +117,12 @@ module inpbuf (/*AUTOARG*/
    //c2 IVMA (.a0(ivma), .a1(rua), .q(dia)); divc is not checked
    ctree #(.DW(3)) ACKT(.ci({ivma, rua, (|divcm)}), .co(dia));
    
-   assign di0m = rstn ? di0 : 0;
-   assign di1m = rstn ? di1 : 0;
-   assign di2m = rstn ? di2 : 0;
-   assign di3m = rstn ? di3 : 0;
-   assign ditm = rstn ? dit : 0;
-   assign divcm = rstn ? divc : 0;
+   assign di0m = rst_n ? di0 : 0;
+   assign di1m = rst_n ? di1 : 0;
+   assign di2m = rst_n ? di2 : 0;
+   assign di3m = rst_n ? di3 : 0;
+   assign ditm = rst_n ? dit : 0;
+   assign divcm = rst_n ? divc : 0;
 
    //---------------------------------------------
    // the VC buffers
@@ -143,7 +143,7 @@ module inpbuf (/*AUTOARG*/
 		   .i3 ( vcd3[gbd][gvc][gsub]   ),
 		   .oa ( vcdadn[gbd+1][gvc][gsub] )
 		   );
-	       assign vcdadn[gbd+1][gvc][gsub] = (~vcdad[gbd+1][gvc][gsub])&rstn;
+	       assign vcdadn[gbd+1][gvc][gsub] = (~vcdad[gbd+1][gvc][gsub])&rst_n;
 	    end // block: SC
 	    
 	    pipen #(.DW(FT)) 
@@ -153,7 +153,7 @@ module inpbuf (/*AUTOARG*/
 		.d_out   ( vcdt[gbd+1][gvc]   ),
 		.d_out_a ( vcdatn[gbd+1][gvc]  )
 		);
-	    assign vcdatn[gbd+1][gvc] = (~vcdat[gbd+1][gvc])&rstn;
+	    assign vcdatn[gbd+1][gvc] = (~vcdat[gbd+1][gvc])&rst_n;
 	    
 	 end // block: V
       end // block: BFN
@@ -188,7 +188,7 @@ module inpbuf (/*AUTOARG*/
 		   .i3 ( vcd3[gbd][gvc][gsub]     ),
 		   .oa ( vcdadn[gbd+1][gvc][gsub] )
 		   );
-	       assign vcdadn[gbd+1][gvc][gsub] = (~vcdad[gbd+1][gvc][gsub])&rstn;
+	       assign vcdadn[gbd+1][gvc][gsub] = (~vcdad[gbd+1][gvc][gsub])&rst_n;
 	    end // block: SC
 	    
 	    pipen #(.DW(FT)) 
@@ -199,7 +199,7 @@ module inpbuf (/*AUTOARG*/
 		.d_out_a ( vcdatn[gbd+1][gvc]  )
 		);
 
-	    assign vcdatn[gbd+1][gvc] = (~vcdat[gbd+1][gvc])&rstn;
+	    assign vcdatn[gbd+1][gvc] = (~vcdat[gbd+1][gvc])&rst_n;
 
 	    pipen #(.DW(2))
 	    CTP (
@@ -209,7 +209,7 @@ module inpbuf (/*AUTOARG*/
 		.d_out_a ( vcftan[gbd+1][gvc] )
 		);
 
-	    assign vcftan[gbd+1][gvc] = (~vcfta[gbd+1][gvc])&rstn;
+	    assign vcftan[gbd+1][gvc] = (~vcfta[gbd+1][gvc])&rst_n;
 	 end // block: V
       end // block: BFL2
 
@@ -233,7 +233,7 @@ module inpbuf (/*AUTOARG*/
 	     .d_in     ( swrt[gvc]          ),
 	     .d_in_a   ( swa[gvc]           ),
 	     .d_out    ( rtg[gvc]           ),
-	     .d_out_a  ( (~vcda[1][gvc])&rstn   )
+	     .d_out_a  ( (~vcda[1][gvc])&rst_n   )
 	     );
       end
    endgenerate
@@ -242,7 +242,7 @@ module inpbuf (/*AUTOARG*/
       for(gvc=0; gvc<VCN; gvc++) begin:LPS
 
 	 // credit control
-	 dc2 FCP (.q(cor[gvc]), .d(|rtg[gvc]), .a((~coa[gvc])&rstn));
+	 dc2 FCP (.q(cor[gvc]), .d(|rtg[gvc]), .a((~coa[gvc])&rst_n));
 
 	 // output name conversation
 	 assign do0[gvc] = vcd0[PD*2][gvc];
@@ -263,7 +263,7 @@ module inpbuf (/*AUTOARG*/
    RTC (
 	.dia   ( rua       ), 
 	.dort  ( vcr       ),
-	.rstn  ( rstn      ),
+	.rst_n ( rst_n     ),
 	.di0   ( di0m[3:0] ), 
 	.di1   ( di1m[3:0] ), 
 	.di2   ( di2m[3:0] ), 

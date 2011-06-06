@@ -49,8 +49,8 @@ SC_MODULE(RTDriver) {
   sc_in<sc_lv<SubChN> > rtoca;
 
   // local variable
-  sc_signal<bool> out_cred;	/* the input credit */
-  sc_signal<bool> out_cred_ack;	/* the input credit ack */
+  sc_signal<bool> out_cred[SubChN];	/* the input credit */
+  sc_signal<bool> out_cred_ack[SubChN];	/* the input credit ack */
 
   
   SC_HAS_PROCESS(RTDriver);
@@ -61,7 +61,6 @@ SC_MODULE(RTDriver) {
   void Creditdetect();		// Method to detect the credit ports
   void send();			// thread of sending a flit
   void recv();			// thread to recveive a flit
-  void credit(unsigned int);	// handle the output credit
 
   sc_signal<bool> rtinp_sig; // fire when the router input port is ready for a new flit
   sc_signal<bool> rtoutp_sig; // fire when the router output port has a new flit

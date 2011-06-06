@@ -103,7 +103,7 @@ module node_top(/*AUTOARG*/
 	.li0(li0), .li1(li1), .li2(li2), .li3(li3), .lia(lia), .lift(lift), .livc(livc), .lic(lic), .lica(lica),
 	.addrx (b2chain(x)), 
 	.addry (b2chain(y)), 
-	.rstn (rst_n)
+	.rst_n (rst_n)
    );
    
 

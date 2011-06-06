@@ -41,8 +41,8 @@ public:
     sc_port<sc_fifo_out_if<FRAME> >     frame_out; // frame for receiving
     
     // interface with router
-    sc_port<sc_fifo_in_if<FLIT> > IP [SubChN]; // input port from IO driver
-    sc_port<sc_fifo_out_if<FLIT> > OP [SubChN];	// output port to IO driver
+    sc_port<sc_fifo_in_if<FLIT> > IP;  // input port from IO driver
+    sc_port<sc_fifo_out_if<FLIT> > OP; // output port to IO driver
     sc_in<bool> CP [SubChN];	       // the credit input from the router input buffer
     sc_out<bool> CPa [SubChN];	       // ack to the credit
 

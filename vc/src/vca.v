@@ -28,7 +28,7 @@ module vcalloc (/*AUTOARG*/
    sosr, wosr, nosr, eosr, losr,
    // Inputs
    svcr, nvcr, lvcr, wvcr, evcr, sswr, wswr, nswr, eswr, lswr, sosa,
-   wosa, nosa, eosa, losa, rstn
+   wosa, nosa, eosa, losa, rst_n
    );
 
    parameter VCN = 4;		// number of VCs
@@ -44,7 +44,7 @@ module vcalloc (/*AUTOARG*/
    output [VCN-1:0] 		   sosr, wosr, nosr, eosr, losr; // SW requests to output VCs
    input [VCN-1:0] 		   sosa, wosa, nosa, eosa, losa;
    
-   input 			   rstn; // active-low reset
+   input 			   rst_n; // active-low reset
    
    wire [VCN-1:0][3:0] 		   msvcr, mnvcr, mlvcr; // shuffled VC requests
    wire [VCN-1:0][1:0] 		   mwvcr, mevcr;
@@ -98,22 +98,22 @@ module vcalloc (/*AUTOARG*/
 	 assign evcra[i] = {evcrai[i][0]|evcrai[i][1]};
 	 assign lvcra[i] = {lvcrai[i][0]|lvcrai[i][1]|lvcrai[i][2]|lvcrai[i][3]};
 	 
-	 or VCRENn0( mnvcr[i][0], nvcr[i][0], (|nvcram[i][0])&rstn);
-	 or VCRENl0( mlvcr[i][0], lvcr[i][0], (|lvcram[i][0])&rstn);
-	 or VCRENs0( msvcr[i][0], svcr[i][0], (|svcram[i][0])&rstn);
-	 or VCRENn1( mnvcr[i][1], nvcr[i][1], (|nvcram[i][1])&rstn);
-	 or VCRENe0( mevcr[i][0], evcr[i][0], (|evcram[i][0])&rstn);
-	 or VCRENl1( mlvcr[i][1], lvcr[i][1], (|lvcram[i][1])&rstn);
-	 or VCRENs1( msvcr[i][1], svcr[i][1], (|svcram[i][1])&rstn);
-	 or VCRENl2( mlvcr[i][2], lvcr[i][2], (|lvcram[i][2])&rstn);
-	 or VCRENs2( msvcr[i][2], svcr[i][2], (|svcram[i][2])&rstn);
-	 or VCRENw0( mwvcr[i][0], wvcr[i][0], (|wvcram[i][0])&rstn);
-	 or VCRENn2( mnvcr[i][2], nvcr[i][2], (|nvcram[i][2])&rstn);
-	 or VCRENl3( mlvcr[i][3], lvcr[i][3], (|lvcram[i][3])&rstn);
-	 or VCRENs3( msvcr[i][3], svcr[i][3], (|svcram[i][3])&rstn);
-	 or VCRENw1( mwvcr[i][1], wvcr[i][1], (|wvcram[i][1])&rstn);
-	 or VCRENn3( mnvcr[i][3], nvcr[i][3], (|nvcram[i][3])&rstn);
-	 or VCRENe1( mevcr[i][1], evcr[i][1], (|evcram[i][1])&rstn);
+	 or VCRENn0( mnvcr[i][0], nvcr[i][0], (|nvcram[i][0])&rst_n);
+	 or VCRENl0( mlvcr[i][0], lvcr[i][0], (|lvcram[i][0])&rst_n);
+	 or VCRENs0( msvcr[i][0], svcr[i][0], (|svcram[i][0])&rst_n);
+	 or VCRENn1( mnvcr[i][1], nvcr[i][1], (|nvcram[i][1])&rst_n);
+	 or VCRENe0( mevcr[i][0], evcr[i][0], (|evcram[i][0])&rst_n);
+	 or VCRENl1( mlvcr[i][1], lvcr[i][1], (|lvcram[i][1])&rst_n);
+	 or VCRENs1( msvcr[i][1], svcr[i][1], (|svcram[i][1])&rst_n);
+	 or VCRENl2( mlvcr[i][2], lvcr[i][2], (|lvcram[i][2])&rst_n);
+	 or VCRENs2( msvcr[i][2], svcr[i][2], (|svcram[i][2])&rst_n);
+	 or VCRENw0( mwvcr[i][0], wvcr[i][0], (|wvcram[i][0])&rst_n);
+	 or VCRENn2( mnvcr[i][2], nvcr[i][2], (|nvcram[i][2])&rst_n);
+	 or VCRENl3( mlvcr[i][3], lvcr[i][3], (|lvcram[i][3])&rst_n);
+	 or VCRENs3( msvcr[i][3], svcr[i][3], (|svcram[i][3])&rst_n);
+	 or VCRENw1( mwvcr[i][1], wvcr[i][1], (|wvcram[i][1])&rst_n);
+	 or VCRENn3( mnvcr[i][3], nvcr[i][3], (|nvcram[i][3])&rst_n);
+	 or VCRENe1( mevcr[i][1], evcr[i][1], (|evcram[i][1])&rst_n);
 
 	 and VCAOs0 (svcrai[i][0], (|svcrami[i][0]), svcraii[i][0]);
 	 and VCAOs1 (svcrai[i][1], (|svcrami[i][1]), svcraii[i][1]);
@@ -309,7 +309,7 @@ module vcalloc (/*AUTOARG*/
 	.ca    (         ),
 	.r     ( svcrdy  ),
 	.ra    ( svcrdya ),
-	.rst_n ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    mrma #(.N(4*VCN), .M(VCN)) 
@@ -319,7 +319,7 @@ module vcalloc (/*AUTOARG*/
 	.ca    (         ),
 	.r     ( wvcrdy  ),
 	.ra    ( wvcrdya ),
-	.rst_n ( rstn    )
+	.rst_n ( rst_n   )
 	);
    
    mrma #(.N(2*VCN), .M(VCN)) 
@@ -329,7 +329,7 @@ module vcalloc (/*AUTOARG*/
 	.ca    (         ),
 	.r     ( nvcrdy  ),
 	.ra    ( nvcrdya ),
-	.rst_n ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    mrma #(.N(4*VCN), .M(VCN)) 
@@ -339,7 +339,7 @@ module vcalloc (/*AUTOARG*/
 	.ca    (         ),
 	.r     ( evcrdy  ),
 	.ra    ( evcrdya ),
-	.rst_n ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    mrma #(.N(4*VCN), .M(VCN)) 
@@ -349,7 +349,7 @@ module vcalloc (/*AUTOARG*/
 	.ca    (         ),
 	.r     ( lvcrdy  ),
 	.ra    ( lvcrdya ),
-	.rst_n ( rstn    )
+	.rst_n ( rst_n   )
 	);
 
    generate

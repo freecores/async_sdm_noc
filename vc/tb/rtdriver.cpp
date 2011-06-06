@@ -28,9 +28,7 @@ RTDriver::RTDriver(sc_module_name mname)
     rtica("rtica"),
     rtoa("rtoa"),
     rtoc("rtoc"),
-    rtoca("rtoca"),
-    IPD("VCIP"),
-    OPD("VCOP")
+    rtoca("rtoca")
 {
   SC_METHOD(IPdetect);
   sensitive << rtia;
@@ -50,10 +48,6 @@ RTDriver::RTDriver(sc_module_name mname)
 
   rtinp_sig = false;
   rtoutp_sig = false;
-
-  sc_spawn_options th_opt;
-  for(unsigned int i=0; i<SubChN; i++)
-    sc_spawn(sc_bind(&RTDriver::credit, this, i), NULL, &th_opt);
 }
   
 void RTDriver::IPdetect() {
@@ -72,10 +66,14 @@ void RTDriver::IPdetect() {
 void RTDriver::OPdetect() {
   sc_lv<ChBW*4> data_lv;	// the ORed data
   sc_logic data_lv_high, data_lv_low;
+  sc_lv<SubChN> vc_lv;		// the local copy of vc number
+  sc_lv<3> ft_lv;		// the local copy of flit type
 
   data_lv = rtod[0].read() | rtod[1].read() | rtod[2].read() | rtod[3].read();
-  data_lv_high = data_lv.and_reduce() & rtovc.read().or_reduce() & rtoft.read().or_reduce();
-  data_lv_low = data_lv.or_reduce() | rtovc.read().or_reduce() | rtoft.read().or_reduce();
+  vc_lv = rtovc.read();
+  ft_lv = rtoft.read();
+  data_lv_high = (sc_logic)(data_lv.and_reduce()) & (sc_logic)(vc_lv.or_reduce()) & (sc_logic)(ft_lv.or_reduce());
+  data_lv_low = (sc_logic)(data_lv.or_reduce()) | (sc_logic)(vc_lv.or_reduce()) | (sc_logic)(ft_lv.or_reduce());
 
   if(data_lv_high.is_01() && data_lv_high.to_bool())
     rtoutp_sig = true;
@@ -162,7 +160,7 @@ void RTDriver::send() {
     case F_HD: mft[0] = SC_LOGIC_1; break;
     case F_DAT: mft[1] = SC_LOGIC_1; break;
     case F_TL: mft[2] = SC_LOGIC_1; break;
-    default:
+    default: break;
     }
     
     // VC number
@@ -214,11 +212,13 @@ void RTDriver::recv() {
   rtoa.write(mack);
 
   while(true) {
-    // clear the flit
-    mflit.clear();
-
     // wait for an incoming flit
     wait(rtoutp_sig.posedge_event());
+    if(out_cred_ack[mflit.vcn].read())
+      wait(out_cred_ack[mflit.vcn].negedge_event());
+
+    // clear the flit
+    mflit.clear();
 
     // analyse the flit
     mdata[0] = rtod[0].read();
@@ -270,41 +270,30 @@ void RTDriver::recv() {
     
     // get the binary vc number
     unsigned int fvcn = mvc.to_uint();
-    while(fvcn != 0) {
+    while(fvcn != 1) {
       mflit.vcn += 1;
       fvcn >>= 1;
     }
 
     // send the flit to the NI
     P2NI->write(mflit);
+
+    // send back a credit
+    out_cred[mflit.vcn] = true;
     
     wait(0.2, SC_NS);		// a delay to avoid data override
     rtoa.write(~mack);		// notify that data is captured
 
     // wait for the data withdrawal
     wait(rtoutp_sig.negedge_event());
+    if(!out_cred_ack[mflit.vcn].read())
+      wait(out_cred_ack[mflit.vcn].posedge_event());
+
     wait(0.2, SC_NS);		// a delay to avoid data override
     rtoa.write(mack);		// notify that data is captured
-    
+    out_cred[mflit.vcn] = false;
   }
 }
-    
-void RTDriver::credit(unsigned int dd) {
-  out_cred[dd] = false;
-
-  while(true){
-    wait(out_cred_ack[dd].posedge_event());
-    wait(0.2, SC_NS);
-    
-    out_cred[dd] = true;
-    
-    wait(out_cred_ack[dd].negedge_event());
-    wait(0.2, SC_NS);
-    
-    out_cred[dd] = false;
-  }
-}
-
 
 unsigned int RTDriver::c1o42b(unsigned int dd) {
   switch(dd) {

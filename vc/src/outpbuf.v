@@ -23,7 +23,7 @@ module outpbuf (/*AUTOARG*/
    // Outputs
    dia, do0, do1, do2, do3, dot, dovc, afc, vca,
    // Inputs
-   di0, di1, di2, di3, dit, doa, credit, vcr, rstn
+   di0, di1, di2, di3, dit, doa, credit, vcr, rst_n
    );
    parameter DW = 32;		// data width
    parameter VCN = 4;		// VC number
@@ -51,7 +51,7 @@ module outpbuf (/*AUTOARG*/
    output [VCN-1:0] vca;
 
    // active-low reset
-   input 	    rstn;
+   input 	    rst_n;
 
    //--------------------------------------------------------------
    wire [VCN-1:0]   vcro, vcg, vcgl, vcrm;
@@ -67,7 +67,7 @@ module outpbuf (/*AUTOARG*/
 	.ro     ( vcro   ),
 	.credit ( credit ), 
 	.ri     ( vcr    ), 
-	.rst    ( ~rstn  )
+	.rst    ( ~rst_n  )
 	);
 
    // VC arbiter
@@ -79,7 +79,7 @@ module outpbuf (/*AUTOARG*/
 	 c2 C (.a0(vcg[i]), .a1(diavcn), .q(vcgl[i]));
       end
    endgenerate
-   assign diavcn = (~diavc)&rstn;
+   assign diavcn = (~diavc)&rst_n;
 
    // output data buffer
    generate
@@ -97,7 +97,7 @@ module outpbuf (/*AUTOARG*/
 	      .i3 ( di3[gsub]    ),
 	      .oa ( doan[gsub]   )
 	      );
-	 assign doan[gsub] = (~doa)&rstn;
+	 assign doan[gsub] = (~doa)&rst_n;
       end // block: SC
    endgenerate
 
@@ -106,7 +106,7 @@ module outpbuf (/*AUTOARG*/
 	.d_in    ( dit     ),
 	.d_in_a  ( diat    ),
 	.d_out   ( dot     ),  
-	.d_out_a ( (~doa)&rstn )
+	.d_out_a ( (~doa)&rst_n )
 	);
    
    ctree #(.DW(SCN+2)) ACKT (.ci({diavc,diat, diad}), .co(dia));
@@ -116,7 +116,7 @@ module outpbuf (/*AUTOARG*/
 	.d_in    ( vcgl       ),
 	.d_in_a  ( diavc      ),
 	.d_out   ( dovc       ),
-	.d_out_a ( (~doa)&rstn )
+	.d_out_a ( (~doa)&rst_n )
 	);
 
    assign vca = dovc;

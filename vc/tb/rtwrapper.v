@@ -30,7 +30,7 @@ module router_hdl(/*AUTOARG*/
    si0, si1, si2, si3, wi0, wi1, wi2, wi3, ni0, ni1, ni2, ni3, ei0,
    ei1, ei2, ei3, li0, li1, li2, li3, sift, wift, nift, eift, lift,
    sivc, wivc, nivc, eivc, livc, sica, wica, nica, eica, lica, soa,
-   woa, noa, eoa, loa, soc, woc, noc, eoc, loc, addrx, addry, rstn
+   woa, noa, eoa, loa, soc, woc, noc, eoc, loc, addrx, addry, rst_n
    );
 
    parameter VCN = 1;		// number of virtual circuits in each direction. When VCN == 1, it is a wormhole router

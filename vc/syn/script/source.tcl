@@ -8,32 +8,31 @@
 # 
 # License: LGPL 3.0 or later
 # 
-# Source files for the wormhole/SDM routers
+# Source files for the VC routers
 # 
 # History:
-# 26/05/2011  Initial version. <wsong83@gmail.com>
-# 02/06/2011  Use separated comp4 file. <wsong83@gmail.com>
+# 02/06/2011  Initial version. <wsong83@gmail.com>
 
 # the common verilog source files between VC and SDM
 analyze -format verilog   ../../common/src/cell_lib.v
 analyze -format verilog   ../../common/src/ctree.v
-analyze -format sverilog  ../../common/src/dcb.v
-analyze -format sverilog  ../../common/src/dcb_xy.v
-analyze -format sverilog  ../../common/src/dclos.v
 analyze -format sverilog  ../../common/src/mnma.v
 analyze -format sverilog  ../../common/src/mrma.v
 analyze -format verilog   ../../common/src/mutex_arb.v
 analyze -format sverilog  ../../common/src/pipe4.v
-analyze -format sverilog  ../../common/src/rcb.v
+analyze -format sverilog  ../../common/src/pipen.v
 analyze -format verilog   ../../common/src/tree_arb.v
 analyze -format verilog   ../../common/src/comp4.v
 
 # the private code of wormhole/SDM routers
-analyze -format sverilog  ../src/clos_sch.v
-analyze -format sverilog  ../src/cm_alloc.v
-analyze -format sverilog  ../src/im_alloc.v
-analyze -format sverilog  ../src/input_buf.v
-analyze -format sverilog  ../src/output_buf.v
+analyze -format sverilog  ../src/cpipe.v
+analyze -format sverilog  ../src/dcb_vc.v
+analyze -format sverilog  ../src/ddmux.v
+analyze -format sverilog  ../src/inpbuf.v
+analyze -format sverilog  ../src/outpbuf.v
 analyze -format sverilog  ../src/router.v
-analyze -format sverilog  ../src/sdm_sch.v
-analyze -format sverilog  ../src/subc_ctl.v
+analyze -format sverilog  ../src/fcctl.v
+analyze -format sverilog  ../src/rcb_vc.v
+analyze -format sverilog  ../src/rtu.v
+analyze -format sverilog  ../src/vca.v
+analyze -format sverilog  ../src/vcdmux.v

@@ -15,7 +15,7 @@
  20/08/2008  Initial version. <wsong83@gmail.com>
  30/09/2010  Use template style packet definition. <wsong83@gmail.com>
  16/10/2010  Support SDM. <wsong83@gmail.com>
- 30/05/2011  CLean up for opensource. <wsong83@gmail.com>
+ 30/05/2011  Clean up for opensource. <wsong83@gmail.com>
 
 */
 

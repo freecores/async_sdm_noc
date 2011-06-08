@@ -259,7 +259,7 @@ module inpbuf (/*AUTOARG*/
    endgenerate
    
    // routing unit
-   rtu #(.VCN(VCN), .DIR(DIR), .SN(SN), .PD(2))
+   rtu #(.VCN(VCN), .DIR(DIR), .SN(SN), .PD(PD))
    RTC (
 	.dia   ( rua       ), 
 	.dort  ( vcr       ),

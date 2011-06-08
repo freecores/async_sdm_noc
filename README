@@ -1,7 +1,7 @@
 
 Asynchronous Spatial Division Multiplexing Router for On-Chip Networks
 
-Version: 0.1 
+Version: 0.2 
 
 On-chip networks or networks-on-chip (NoCs) are the on-chip communication fabric for
 current and future multiprocessor SoCs (MPSoCs) and chip multiprocessors (CMPs).
@@ -26,7 +26,7 @@ direction.
 Features:
   * 5-port router for mesh network (0 south, 1 west, 2 north, 3 east, 4 local)
   * The dimension order routing (XY routing)
-  * Available flow control methods: wormhole, SDM
+  * Available flow control methods: wormhole, SDM, VC
   * Reconfigurable number of virtual circuits, buffer size, data width
   * Fully synthesizable router implementation
   * SystemC testbench provided
@@ -55,7 +55,14 @@ File structure:
    |- syn                               synthesis run dir
     \- script                           synthesis script
    \- tb                                test bench
-  * vc                                  VC router (ongoing)
+  * vc                                  VC router deign
+   \- define.v                          HDL configure file
+   |- define.h                          test bench configuration
+   |- sim                               simulation run dir
+   |- src                               HDL
+   |- syn                               synthesis run dir
+    \- script                           synthesis script
+   \- tb                                test bench
 
 How to run:
   * to synthesize a router
@@ -95,9 +102,12 @@ How to run:
        "delay.ana":
          {simulation time in ps} TAB {avg. frame latency} TAB {avg. path setup delay}
 
+  * The process of synthesize and simulate the VC router is similar to the procedure of
+    the wormhole/SDM router.
+
 For any questions and bug reports,
     please email to Wei Song from wsong83@gmail.com
 
 Wei Song
-01/06/2011
+08/06/2011
        

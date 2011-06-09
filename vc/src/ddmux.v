@@ -14,6 +14,7 @@
  History:
  31/03/2010  Initial version. <wsong83@gmail.com>
  02/06/2011  Clean up for opensource. <wsong83@gmail.com>
+ 09/06/2011  Make sure the sel pin is considered in the ack process. <wsong83@gmail.com>
  
 */
 
@@ -51,7 +52,8 @@ module ddmux ( /*AUTOARG*/
       end
    endgenerate   
    
-   assign d_in_a = |d_out_a;
+   //assign d_in_a = |d_out_a;
+   c2 CACK (.a0(|d_out_a), .a1(|d_sel), .q(d_in_a));
 
 endmodule // ddmux
 

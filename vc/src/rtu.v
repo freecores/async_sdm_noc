@@ -15,7 +15,7 @@
  History:
  02/04/2010  Initial version. <wsong83@gmail.com>
  02/06/2011  Clean up for opensource. <wsong83@gmail.com>
- 08/06/2011  The selection pin of the demux must be considered in the ack process. <wsong83@gmail.com>
+ 09/06/2011  The selection pin of the demux must be considered in the ack process. <wsong83@gmail.com>
  
 */
 
@@ -51,7 +51,7 @@ module rtu (/*AUTOARG*/
    wire 	    p2a, p2ad, p2avc, p2an;
    wire [SN-1:0]    p3d;
    wire [VCN-1:0]   p3vc;
-   wire 	    p3a, p3an, p3ad;
+   wire 	    p3a, p3an;
    wire [PD*2:0][VCN-1:0][SN-1:0] pd;
    wire [PD*2:0][VCN-1:0] 	  pda, pdan;
 
@@ -146,14 +146,14 @@ module rtu (/*AUTOARG*/
    // p3 -> DEMUX -> pd[0]
    ddmux #(.DW(SN), .VCN(VCN))
    RTDM (
-	 .d_in_a  ( p3ad  ), 
+	 .d_in_a  ( p3a   ), 
 	 .d_out   ( pd[0] ),
 	 .d_in    ( p3d   ), 
 	 .d_sel   ( p3vc  ), 
 	 .d_out_a ( pda[0])
 	 );
 
-   c2 CP3A (.q(p3a), .a0(p3ad), .a1(|p3vc));
+   //c2 CP3A (.q(p3a), .a0(p3ad), .a1(|p3vc));
    assign p3an = (~p3a) & rst_n;
 
    // pd pipeline

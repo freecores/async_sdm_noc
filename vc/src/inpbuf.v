@@ -16,6 +16,7 @@
  12/05/2010  Use MPxP crossbars. <wsong83@gmail.com>
  17/04/2010  Remove unnecessary pipeline stages. <wsong83@gmail.com>
  02/06/2011  Clean up for opensource. <wsong83@gmail.com>
+ 09/06/2011  Remove the C-elements as muxes already have C-elements inside. <wsong83@gmail.com>
  
 */
 
@@ -115,7 +116,7 @@ module inpbuf (/*AUTOARG*/
 	 );
 
    //c2 IVMA (.a0(ivma), .a1(rua), .q(dia)); divc is not checked
-   ctree #(.DW(3)) ACKT(.ci({ivma, rua, (|divcm)}), .co(dia));
+   ctree #(.DW(2)) ACKT(.ci({ivma, rua}), .co(dia));
    
    assign di0m = rst_n ? di0 : 0;
    assign di1m = rst_n ? di1 : 0;

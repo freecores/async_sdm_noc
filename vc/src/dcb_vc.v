@@ -15,6 +15,7 @@
  04/04/2010  Initial version. <wsong83@gmail.com>
  12/05/2010  Use MPxP crossbar. <wsong83@gmail.com>
  02/06/2011  Clean up for opensource. <wsong83@gmail.com>
+ 09/06/2011  Remove the C-elements as muxes already have C-elements inside. <wsong83@gmail.com>
  
 */
 
@@ -169,6 +170,7 @@ module dcb_vc (/*AUTOARG*/
 	       );
 	 
 	 // acknowledgement
+	 /*
 	 c2 SA0 (.a0(srtg[i][0]), .a1(doa[1]), .q(sa[i][0]));
 	 c2 SA1 (.a0(srtg[i][1]), .a1(doa[2]), .q(sa[i][1]));
 	 c2 SA2 (.a0(srtg[i][2]), .a1(doa[3]), .q(sa[i][2]));
@@ -185,7 +187,24 @@ module dcb_vc (/*AUTOARG*/
 	 c2 LA1 (.a0(lrtg[i][1]), .a1(doa[1]), .q(la[i][1]));
 	 c2 LA2 (.a0(lrtg[i][2]), .a1(doa[2]), .q(la[i][2]));
 	 c2 LA3 (.a0(lrtg[i][3]), .a1(doa[3]), .q(la[i][3]));
-
+	  */
+	 assign sa[i][0] = doa[1];
+	 assign sa[i][1] = doa[2];
+	 assign sa[i][2] = doa[3];
+	 assign sa[i][3] = doa[4];
+	 assign wa[i][0] = doa[3];
+	 assign wa[i][1] = doa[4];
+	 assign na[i][0] = doa[0];
+	 assign na[i][1] = doa[1];
+	 assign na[i][2] = doa[3];
+	 assign na[i][3] = doa[4];
+	 assign ea[i][0] = doa[1];
+	 assign ea[i][1] = doa[4];
+	 assign la[i][0] = doa[0];
+	 assign la[i][1] = doa[1];
+	 assign la[i][2] = doa[2];
+	 assign la[i][3] = doa[3];
+	 
       end // block: IMX
    endgenerate
 

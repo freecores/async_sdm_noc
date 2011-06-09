@@ -14,7 +14,8 @@
  History:
  31/03/2010  Initial version. <wsong83@gmail.com>
  02/06/2011  Clean up for opensource. <wsong83@gmail.com>
- 
+ 09/06/2011  Make sure the sel pin is considered in the ack process. <wsong83@gmail.com>
+
 */
 
 module vcdmux ( /*AUTOARG*/
@@ -65,7 +66,8 @@ module vcdmux ( /*AUTOARG*/
       end
    endgenerate   
 
-   assign dia = |doa;
+   //assign dia = |doa;
+   c2 CACK (.a0(|doa), .a1(|divc), .q(dia));
 
 endmodule // vcdmux
 

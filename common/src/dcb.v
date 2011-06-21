@@ -15,17 +15,21 @@
  History:
  17/07/2010  Initial version. <wsong83@gmail.com>
  23/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 21/06/2011  Prepare to support buffered Clos. <wsong83@gmail.com>
  
 */
 
 // the router structure definitions
 `include "define.v"
 
-module dcb (/*AUTOARG*/
+module dcb (
    // Outputs
    o0, o1, o2, o3, ia, o4,
    // Inputs
    i0, i1, i2, i3, oa, i4, cfg
+`ifdef ENABLE_BUFFERED_CLOS
+   , o4a
+`endif
    );
 
    parameter NN = 2;		// number of input ports
@@ -39,6 +43,9 @@ module dcb (/*AUTOARG*/
 `ifdef ENABLE_CHANNEL_SLICING
    output [NN-1:0][SCN-1:0] 	 ia, o4; // eof and ack
    input [MN-1:0][SCN-1:0] 	 oa, i4;
+ `ifdef ENABLE_BUFFERED_CLOS
+   input [MN-1:0][SCN-1:0] 	 oa4; // the eof ack from output buffer
+ `endif
 `else
    output [NN-1:0] 		 ia, o4; // eof and ack
    input [MN-1:0] 		 oa, i4;
@@ -50,8 +57,14 @@ module dcb (/*AUTOARG*/
 
 `ifdef ENABLE_CHANNEL_SLICING
    wire [NN-1:0][SCN-1:0][MN-1:0] am, dm4;
+ `ifdef ENABLE_BUFFERED_CLOS
+   wire [NN-1:0][SCN-1:0][MN-1:0] amd, am4;
+ `endif   
 `else
    wire [NN-1:0][MN-1:0] 	  am, dm4;
+ `ifdef ENABLE_BUFFERED_CLOS
+   wire [NN-1:0][MN-1:0] 	  amd, am4;
+ `endif   
 `endif
    
    genvar 			 i, j, k;
@@ -66,13 +79,25 @@ module dcb (/*AUTOARG*/
 	       and A3 (dm3[i][k][j], i3[j][k], cfg[i][j]);
 `ifdef ENABLE_CHANNEL_SLICING
 	       and A4 (dm4[i][k][j], i4[j][k], cfg[i][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	       and Aad (amd[j][k][i], oa[i][k], cfg[i][j]);
+	       c2  Aa4 (.q(am4[j][k][i]), .a0(oa4[i][k]), .a1(cfg[i][j]));
+	       assign am[j][k][i] = amd[j][k][i] | am4[j][k][i];
+ `else
 	       and Aa (am[j][k][i], oa[i][k], cfg[i][j]);
+ `endif	       
 `endif
 	    end
 
 `ifndef ENABLE_CHANNEL_SLICING
 	    and A4 (dm4[i][j], i4[j], cfg[i][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	    and Aa (amd[j][i], oa[i], cfg[i][j]);
+	    c2  Aa4 (.q(am4[j][i]), .a0(oa4[i]), .a1(cfg[i][j]));
+	    assign am[j][i] = amd[j][i] | am4[j][i];	    
+ `else
 	    and Aa (am[j][i], oa[i], cfg[i][j]);
+ `endif
 `endif
 	 end // block: IP
       end // block: EN

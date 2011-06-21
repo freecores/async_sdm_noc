@@ -16,20 +16,15 @@
  05/05/2009  Initial version. <wsong83@gmail.com>
  17/04/2011  Replace the common ack generation. <wsong83@gmail.com>
  26/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 21/06/2011  Remove the eof as it makes confusion. <wsong83@gmail.com>
  
 */
-
-// the router structure definitions
-`include "define.v"
 
 module pipe4(/*AUTOARG*/
    // Outputs
    ia, o0, o1, o2, o3,
    // Inputs
    i0, i1, i2, i3, oa
-`ifdef ENABLE_EOF
-   , i4, o4
-`endif
    );
     
    parameter DW = 32;		// the data width of the pipeline stage
@@ -40,11 +35,6 @@ module pipe4(/*AUTOARG*/
    input 	     oa;	// input ack
    output 	     ia;	// output ack
 
-`ifdef ENABLE_EOF
-   output 	     o4;	// the eof bit
-   input 	     i4;
-`endif
-   
    // internal signals
    wire [SCN-1:0]    tack;
    
@@ -58,11 +48,6 @@ module pipe4(/*AUTOARG*/
       dc2 DC2 (.d(i2[i]), .a(oa), .q(o2[i]));
       dc2 DC3 (.d(i3[i]), .a(oa), .q(o3[i]));
    end endgenerate
-
-   // the eof bit
-`ifdef ENABLE_EOF
-   dc2 DD_DC4 (.d(i4),  .a(oa),  .q(o4));
-`endif
 
    // generate the input ack
    assign tack = o0|o1|o2|o3;

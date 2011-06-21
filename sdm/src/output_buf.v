@@ -21,6 +21,7 @@
  20/09/2010  Supporting channel slicing and SDM using macro difinitions. <wsong83@gmail.com>
  22/10/2010  Parameterize the number of pipelines in output buffers. <wsong83@gmail.com>
  23/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 21/06/2011  Move the eof logic in every pipeline stage outside the pipe4 module. <wsong83@gmail.com>
  
 */
 
@@ -47,12 +48,12 @@ module outp_buf (/*AUTOARG*/
    input [SCN-1:0] 	  i4, oa; // eof and ack
    output [SCN-1:0] 	  o4, ia;
    wire [SCN-1:0] 	  ian_dly;
-   wire [PD:0][SCN-1:0]   pd4, pda, pdan; // internal eof and ack
+   wire [PD:0][SCN-1:0]   pd4, pda, pdan, pd4an; // internal eof and ack
 `else
    input 		  i4, oa; // eof and ack
    output 		  o4, ia;
    wire 		  ian_dly;
-   wire [PD:0] 		  pd4, pda, pdan; // internal eof and ack
+   wire [PD:0] 		  pd4, pda, pdan, pd4an; // internal eof and ack
 `endif
 
 
@@ -67,15 +68,23 @@ module outp_buf (/*AUTOARG*/
 	    .o1  ( pd1[i][j]   ),
 	    .o2  ( pd2[i][j]   ),
 	    .o3  ( pd3[i][j]   ),
-	    .o4  ( pd4[i][j]   ),
+	    //.o4  ( pd4[i][j]   ),
 	    .ia  ( pda[i+1][j] ),
 	    .i0  ( pd0[i+1][j] ),
 	    .i1  ( pd1[i+1][j] ),
 	    .i2  ( pd2[i+1][j] ),
 	    .i3  ( pd3[i+1][j] ),
-	    .i4  ( pd4[i+1][j] ),
+	    //.i4  ( pd4[i+1][j] ),
 	    .oa  ( pdan[i][j]  )
 	    );
+
+	 pipen #(.DW(1))
+	 PEoF (
+	       .d_in_a  (             ),
+	       .d_out   ( pd4[i][j]   ),
+	       .d_in    ( pd4[i+1][j] ),
+	       .d_out_a ( pd4an[i][j] )
+	       );
       end // block: SC
 
 `else // !`ifdef ENABLE_CHANNEL_SLICING
@@ -85,15 +94,24 @@ module outp_buf (/*AUTOARG*/
 	 .o1  ( pd1[i]   ),
 	 .o2  ( pd2[i]   ),
 	 .o3  ( pd3[i]   ),
-	 .o4  ( pd4[i]   ),
+	 //.o4  ( pd4[i]   ),
 	 .ia  ( pda[i+1] ),
 	 .i0  ( pd0[i+1] ),
 	 .i1  ( pd1[i+1] ),
 	 .i2  ( pd2[i+1] ),
 	 .i3  ( pd3[i+1] ),
-	 .i4  ( pd4[i+1] ),
+	 //.i4  ( pd4[i+1] ),
 	 .oa  ( pdan[i]  )
 	 );
+
+      pipen #(.DW(1))
+      PEoF (
+	    .d_in_a  (          ),
+	    .d_out   ( pd4[i]   ),
+	    .d_in    ( pd4[i+1] ),
+	    .d_out_a ( pd4an[i] )
+	    );
+      
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
    end // block: DP
    endgenerate
@@ -115,6 +133,7 @@ module outp_buf (/*AUTOARG*/
 	 assign ia[j] = pda[PD][j]|pd4[PD-1][j];
  `endif
 	 assign pdan[0][j] = (~oa[j])&rst_n;
+	 assign pd4an[0][j] = pdan[0][j];
       end
 `else
  `ifdef ENABLE_LOOKAHEAD
@@ -124,6 +143,7 @@ module outp_buf (/*AUTOARG*/
       assign ia = pda[PD]|pd4[PD-1];
  `endif
       assign pdan[0] = (~oa)&rst_n;
+      assign pd4an[0] = pdan[0];
 `endif // !`ifdef ENABLE_LOOKAHEAD
    endgenerate
    

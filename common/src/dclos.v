@@ -16,13 +16,14 @@
  17/07/2010  Initial version. <wsong83@gmail.com>
  20/09/2010  Supporting channel slicing and SDM using macro difinitions. <wsong83@gmail.com>
  23/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 21/06/2011  Prepare to support buffered Clos. <wsong83@gmail.com>
  
 */
 
 // the router structure definitions
 `include "define.v"
 
-module dclos (/*AUTOARG*/
+module dclos (
    // Outputs
    so0, so1, so2, so3, wo0, wo1, wo2, wo3, no0, no1, no2, no3, eo0,
    eo1, eo2, eo3, lo0, lo1, lo2, lo3, so4, wo4, no4, eo4, lo4, sia,
@@ -31,6 +32,9 @@ module dclos (/*AUTOARG*/
    si0, si1, si2, si3, wi0, wi1, wi2, wi3, ni0, ni1, ni2, ni3, ei0,
    ei1, ei2, ei3, li0, li1, li2, li3, si4, wi4, ni4, ei4, li4, soa,
    woa, noa, eoa, loa, imcfg, scfg, ncfg, wcfg, ecfg, lcfg
+`ifdef ENABLE_BUFFERED_CLOS
+   , soa4, woa4, noa4, eoa4, loa4
+`endif
    );
    
    parameter MN = 2;		// number of CMs
@@ -55,11 +59,17 @@ module dclos (/*AUTOARG*/
    output [NN-1:0][SCN-1:0]    so4, wo4, no4, eo4, lo4;
    output [NN-1:0][SCN-1:0]    sia, wia, nia, eia, lia;
    input [NN-1:0][SCN-1:0]     soa, woa, noa, eoa, loa;
+ `ifdef ENABLE_BUFFERED_CLOS
+   input [NN-1:0][SCN-1:0]     soa4, woa4, noa4, eoa4, loa4; // the eof ack from output buffers
+ `endif
 `else
    input [NN-1:0] 	       si4, wi4, ni4, ei4, li4;
    output [NN-1:0] 	       so4, wo4, no4, eo4, lo4;
    output [NN-1:0] 	       sia, wia, nia, eia, lia;
    input [NN-1:0] 	       soa, woa, noa, eoa, loa;
+ `ifdef ENABLE_BUFFERED_CLOS
+   input [NN-1:0] 	       soa4, woa4, noa4, eoa4, loa4; // the eof ack from output buffers
+ `endif
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
 
    input [4:0][MN-1:0][NN-1:0] imcfg; // configuration for IMs
@@ -77,9 +87,15 @@ module dclos (/*AUTOARG*/
 `ifdef ENABLE_CHANNEL_SLICING
    wire [MN-1:0][SCN-1:0]      imos4, imow4, imon4, imoe4, imol4;
    wire [MN-1:0][SCN-1:0]      imosa, imowa, imona, imoea, imola;
+ `ifdef ENABLE_BUFFERED_CLOS
+   wire [MN-1:0][SCN-1:0]      imosa4, imowa4, imona4, imoea4, imola4;
+ `endif
 `else
    wire [MN-1:0] 	       imos4, imow4, imon4, imoe4, imol4;
    wire [MN-1:0] 	       imosa, imowa, imona, imoea, imola;
+ `ifdef ENABLE_BUFFERED_CLOS
+   wire [MN-1:0] 	       imosa4, imowa4, imona4, imoea4, imola4;
+ `endif
 `endif
 
    // input of CMs
@@ -94,8 +110,14 @@ module dclos (/*AUTOARG*/
    wire [MN-1:0][4:0][SCN-1:0] cmo0, cmo1, cmo2, cmo3;
 `ifdef ENABLE_CHANNEL_SLICING
    wire [MN-1:0][4:0][SCN-1:0] cmo4, cmoa;
+ `ifdef ENABLE_BUFFERED_CLOS
+   wire [MN-1:0][4:0][SCN-1:0] cmoa4;
+ `endif
 `else
    wire [MN-1:0][4:0] 	       cmo4, cmoa;
+ `ifdef ENABLE_BUFFERED_CLOS
+   wire [MN-1:0][4:0] 	       cmoa4;
+ `endif
 `endif
    
    genvar 		       i,j,k;

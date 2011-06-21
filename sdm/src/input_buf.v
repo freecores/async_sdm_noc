@@ -25,7 +25,7 @@
  20/09/2010  Supporting channel slicing and SDM using macro difinitions. <wsong83@gmail.com>
  24/05/2011  Clean up for opensource. <wsong83@gmail.com>
  01/06/2011  Use the comp4 common comparator rather than the chain_comparator defined in this module. <wsong83@gmail.com>
-  
+ 21/06/2011  Move the eof logic in every pipeline stage outside the pipe4 module. <wsong83@gmail.com>
 */
 
 // the router structure definitions
@@ -73,11 +73,11 @@ module inp_buf (/*AUTOARG*/
    
 `ifdef ENABLE_CHANNEL_SLICING
    wire [SCN-1:0] 	  rtrst;	       // rt decoder reset for each sub-channel
-   wire [PD:0][SCN-1:0]   pd4, pda, pdan;      // data wires for the internal pipeline stages
+   wire [PD:0][SCN-1:0]   pd4, pda, pdan, pd4an; // data wires for the internal pipeline stages
 
 `else
    wire 		  rtrst;	       // rt decode reset
-   wire [PD:0] 		  pd4, pda, pdan;      // data wires for the internal pipeline satges
+   wire [PD:0] 		  pd4, pda, pdan, pd4an; // data wires for the internal pipeline satges
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
 
    genvar 		  i, j;
@@ -92,16 +92,26 @@ module inp_buf (/*AUTOARG*/
 	    .o1  ( pd1[i][j]   ),
 	    .o2  ( pd2[i][j]   ),
 	    .o3  ( pd3[i][j]   ),
-	    .o4  ( pd4[i][j]   ),
+	    //.o4  ( pd4[i][j]   ),
 	    .ia  ( pda[i+1][j] ),
 	    .i0  ( pd0[i+1][j] ),
 	    .i1  ( pd1[i+1][j] ),
 	    .i2  ( pd2[i+1][j] ),
 	    .i3  ( pd3[i+1][j] ),
-	    .i4  ( pd4[i+1][j] ),
+	    //.i4  ( pd4[i+1][j] ),
 	    .oa  ( pdan[i][j]  )
 	    );
+
+	 pipen #(.DW(1))
+	 PEoF (
+	       .d_in_a  (             ),
+	       .d_out   ( pd4[i][j]   ),
+	       .d_in    ( pd4[i+1][j] ),
+	       .d_out_a ( pd4an[i][j] )
+	       );
+	 
       end // block: SC
+      
 
 `else // !`ifdef ENABLE_CHANNEL_SLICING
       pipe4 #(.DW(DW))
@@ -110,21 +120,31 @@ module inp_buf (/*AUTOARG*/
 	 .o1  ( pd1[i]   ),
 	 .o2  ( pd2[i]   ),
 	 .o3  ( pd3[i]   ),
-	 .o4  ( pd4[i]   ),
+	 //.o4  ( pd4[i]   ),
 	 .ia  ( pda[i+1] ),
 	 .i0  ( pd0[i+1] ),
 	 .i1  ( pd1[i+1] ),
 	 .i2  ( pd2[i+1] ),
 	 .i3  ( pd3[i+1] ),
-	 .i4  ( pd4[i+1] ),
+	 //.i4  ( pd4[i+1] ),
 	 .oa  ( pdan[i]  )
 	 );
+
+      pipen #(.DW(1))
+      PEoF (
+	    .d_in_a  (          ),
+	    .d_out   ( pd4[i]   ),
+	    .d_in    ( pd4[i+1] ),
+	    .d_out_a ( pd4an[i] )
+	    );
+      
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
    end // block: DP
    endgenerate
 
    generate for(i=1; i<PD; i++) begin: DPA
       assign pdan[i] = rst_n ? ~(pda[i]|pd4[i-1]) : 0;
+      assign pd4an[i] = pdan[i];
    end
    endgenerate
 
@@ -210,6 +230,7 @@ module inp_buf (/*AUTOARG*/
 		      .rt_err   ( rt_err      ),
 		      .rst_n    ( rst_n       )
 		      );
+      assign pd4an[0][j] = pdan[0][j];
    end // block: SC
 `else // !`ifdef ENABLE_CHANNEL_SLICING
    subc_ctl SCH_C (
@@ -222,6 +243,7 @@ module inp_buf (/*AUTOARG*/
 		   .rt_err   ( rt_err   ),
 		   .rst_n    ( rst_n    )
 		   );
+   assign pd4an[0] = pdan[0];
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
    
    // the router controller part

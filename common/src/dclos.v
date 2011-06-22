@@ -238,7 +238,18 @@ module dclos (
 	    .i1 ( imos1[i]    ),
 	    .i2 ( imos3[i]    ),
 	    .i3 ( imos4[i]    ),
-	    
+	    .oa ( cmian[i][0]  )
+	    );
+
+	 pipen #(.DW(1))
+	 PEoF (
+	       .d_in_a  ( imosa4[i]   ),
+	       .d_out   ( cmi4[i][0]  ),
+	       .d_in    ( imos4[i]    ),
+	       .d_out_a ( cmian[i][0] ),
+	       );
+	 
+	 
 
 `else
       // shuffle the interconnects between IMs and CMs

@@ -17,13 +17,14 @@
  21/08/2009  Initial version. <wsong83@gmail.com>
  20/09/2010  Supporting channel slicing and SDM using macro difinitions. <wsong83@gmail.com>
  23/05/2011  Clean up for opensource. <wsong83@gmail.com>
- 
+ 22/06/2011  Prepare to support buffered Clos. <wsong83@gmail.com>
+
 */
 
 // the router structure definitions
 `include "define.v"
 
-module dcb_xy (/*AUTOARG*/
+module dcb_xy (
    // Outputs
    so0, so1, so2, so3, wo0, wo1, wo2, wo3, no0, no1, no2, no3, eo0,
    eo1, eo2, eo3, lo0, lo1, lo2, lo3, so4, sia, wo4, wia, no4, nia,
@@ -32,6 +33,9 @@ module dcb_xy (/*AUTOARG*/
    si0, si1, si2, si3, wi0, wi1, wi2, wi3, ni0, ni1, ni2, ni3, ei0,
    ei1, ei2, ei3, li0, li1, li2, li3, si4, soa, wi4, woa, ni4, noa,
    ei4, eoa, li4, loa, scfg, ncfg, wcfg, ecfg, lcfg
+`ifdef ENABLE_BUFFERED_CLOS
+   , soa4, woa4, noa4, eoa4, loa4
+`endif
    ) ;
 
    parameter VCN = 1;		// number of virtual circuits per port
@@ -61,6 +65,9 @@ module dcb_xy (/*AUTOARG*/
    output [VCN-1:0][SCN-1:0]   eo4, eia;
    input [VCN-1:0][SCN-1:0]    li4, loa;
    output [VCN-1:0][SCN-1:0]   lo4, lia;
+ `ifdef ENABLE_BUFFERED_CLOS
+   input [VCN-1:0][SCN-1:0]    soa4, woa4, noa4, eoa4, loa4;
+ `endif
 `else // !`ifdef ENABLE_CHANNEL_SLICING
    input [VCN-1:0] 	       si4, soa;
    output [VCN-1:0] 	       so4, sia;
@@ -72,13 +79,15 @@ module dcb_xy (/*AUTOARG*/
    output [VCN-1:0] 	       eo4, eia;
    input [VCN-1:0] 	       li4, loa;
    output [VCN-1:0] 	       lo4, lia;
+ `ifdef ENABLE_BUFFERED_CLOS
+   input [VCN-1:0] 	       soa4, woa4, noa4, eoa4, loa4;
+ `endif
 `endif   
 
    // configurations
    input [VCN-1:0][1:0][VCN-1:0]        scfg, ncfg;
    input [VCN-1:0][3:0][VCN-1:0]        wcfg, ecfg, lcfg;
    
-
    // ANDed wires
    wire [VCN-1:0][SCN-1:0][1:0][VCN-1:0] tos0, tos1, tos2, tos3;     // the wires to the south output port
    wire [VCN-1:0][SCN-1:0][3:0][VCN-1:0] tow0, tow1, tow2, tow3;     // the wires to the west output port
@@ -98,7 +107,10 @@ module dcb_xy (/*AUTOARG*/
    wire [VCN-1:0][SCN-1:0][3:0][VCN-1:0] ina;                        // ack back to north
    wire [VCN-1:0][SCN-1:0][1:0][VCN-1:0] iea;                        // ack back to east
    wire [VCN-1:0][SCN-1:0][3:0][VCN-1:0] ila;                        // ack back to local
-
+ `ifdef ENABLE_BUFFERED_CLOS
+   wire [VCN-1:0][SCN-1:0][1:0][VCN-1:0] tosad, tosa4, tonad, tona4;
+   wire [VCN-1:0][SCN-1:0][3:0][VCN-1:0] towad, towa4, toead, toea4, tolad, tola4;
+ `endif
 `else // !`ifdef ENABLE_CHANNEL_SLICING
    wire [VCN-1:0][1:0][VCN-1:0] tos4, tosa;                 // the wires to the south output port
    wire [VCN-1:0][3:0][VCN-1:0] tow4, towa;                 // the wires to the west output port
@@ -112,6 +124,10 @@ module dcb_xy (/*AUTOARG*/
    wire [VCN-1:0][1:0][VCN-1:0] iea;                        // ack back to east
    wire [VCN-1:0][3:0][VCN-1:0] ila;                        // ack back to local
 
+ `ifdef ENABLE_BUFFERED_CLOS
+   wire [VCN-1:0][1:0][VCN-1:0] tosad, tosa4, tonad, tona4;
+   wire [VCN-1:0][3:0][VCN-1:0] towad, towa4, toead, toea4, tolad, tola4;
+ `endif
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
    
    // generate
@@ -133,16 +149,34 @@ module dcb_xy (/*AUTOARG*/
 	      and AL3 (tos3[i][k][1][j], li3[j][k], scfg[i][1][j]);
 `ifdef ENABLE_CHANNEL_SLICING
 	      and AN4 (tos4[i][k][0][j], ni4[j][k], scfg[i][0][j]);
-	      and ANA (tosa[i][k][0][j], soa[i][k], scfg[i][0][j]);
 	      and AL4 (tos4[i][k][1][j], li4[j][k], scfg[i][1][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	      and ALAd (tosad[i][k][1][j], soa[i][k], scfg[i][1][j]);
+	      and ANAd (tosad[i][k][0][j], soa[i][k], scfg[i][0][j]);
+	      c2 ALA4 (.q(tosa4[i][k][1][j]), .a0(soa4[i][k]), .a1(scfg[i][1][j]));
+	      c2 ANA4 (.q(tosa4[i][k][0][j]), .a0(soa4[i][k]), .a1(scfg[i][0][j]));
+	      assign tosa[i][k][1][j] = tosad[i][k][1][j] | tosa4[i][k][1][j];
+	      assign tosa[i][k][0][j] = tosad[i][k][0][j] | tosa4[i][k][0][j];
+ `else
 	      and ALA (tosa[i][k][1][j], soa[i][k], scfg[i][1][j]);
+	      and ANA (tosa[i][k][0][j], soa[i][k], scfg[i][0][j]);
+ `endif
 `endif	      
 	   end // block: SC
 `ifndef ENABLE_CHANNEL_SLICING
 	   and AN4 (tos4[i][0][j], ni4[j], scfg[i][0][j]);
-	   and ANA (tosa[i][0][j], soa[i], scfg[i][0][j]);
 	   and AL4 (tos4[i][1][j], li4[j], scfg[i][1][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	   and ANAd (tosad[i][0][j], soa[i], scfg[i][0][j]);
+	   and ALAd (tosad[i][1][j], soa[i], scfg[i][1][j]);
+	   c2 ANA4 (.q(tosa4[i][0][j]), .a0(soa4[i]), .a1(scfg[i][0][j]));
+	   c2 ALA4 (.q(tosa4[i][1][j]), .a0(soa4[i]), .a1(scfg[i][1][j]));
+	   assign tosa[i][0][j] = tosad[i][0][j] | tosa4[i][0][j];
+	   assign tosa[i][1][j] = tosad[i][0][j] | tosa4[i][1][j];	   
+ `else
+	   and ANA (tosa[i][0][j], soa[i], scfg[i][0][j]);
 	   and ALA (tosa[i][1][j], soa[i], scfg[i][1][j]);
+ `endif
 `endif	   
 	end // block: V
 	
@@ -184,24 +218,54 @@ module dcb_xy (/*AUTOARG*/
 	      and AL3 (tow3[i][k][3][j], li3[j][k], wcfg[i][3][j]);
 `ifdef ENABLE_CHANNEL_SLICING
 	      and AS4 (tow4[i][k][0][j], si4[j][k], wcfg[i][0][j]);
-	      and ASA (towa[i][k][0][j], woa[i][k], wcfg[i][0][j]);
 	      and AN4 (tow4[i][k][1][j], ni4[j][k], wcfg[i][1][j]);
-	      and ANA (towa[i][k][1][j], woa[i][k], wcfg[i][1][j]);
 	      and AE4 (tow4[i][k][2][j], ei4[j][k], wcfg[i][2][j]);
-	      and AEA (towa[i][k][2][j], woa[i][k], wcfg[i][2][j]);
 	      and AL4 (tow4[i][k][3][j], li4[j][k], wcfg[i][3][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	      and ASAd (towad[i][k][0][j], woa[i][k], wcfg[i][0][j]);
+	      and ANAd (towad[i][k][1][j], woa[i][k], wcfg[i][1][j]);
+	      and AEAd (towad[i][k][2][j], woa[i][k], wcfg[i][2][j]);
+	      and ALAd (towad[i][k][3][j], woa[i][k], wcfg[i][3][j]);
+	      c2 ASA4 (.q(towa4[i][k][0][j]), .a0(woa4[i][k]), .a1(wcfg[i][0][j]));
+	      c2 ANA4 (.q(towa4[i][k][1][j]), .a0(woa4[i][k]), .a1(wcfg[i][1][j]));
+	      c2 AEA4 (.q(towa4[i][k][2][j]), .a0(woa4[i][k]), .a1(wcfg[i][2][j]));
+	      c2 ALA4 (.q(towa4[i][k][3][j]), .a0(woa4[i][k]), .a1(wcfg[i][3][j]));
+	      assign towa[i][k][0][j] = towad[i][k][0][j] | towa4[i][k][0][j];
+	      assign towa[i][k][1][j] = towad[i][k][1][j] | towa4[i][k][1][j];
+	      assign towa[i][k][2][j] = towad[i][k][2][j] | towa4[i][k][2][j];
+	      assign towa[i][k][3][j] = towad[i][k][3][j] | towa4[i][k][3][j];	      
+ `else
+	      and ASA (towa[i][k][0][j], woa[i][k], wcfg[i][0][j]);
+	      and ANA (towa[i][k][1][j], woa[i][k], wcfg[i][1][j]);
+	      and AEA (towa[i][k][2][j], woa[i][k], wcfg[i][2][j]);
 	      and ALA (towa[i][k][3][j], woa[i][k], wcfg[i][3][j]);
+ `endif
 `endif	      
 	   end // block: SC
 `ifndef ENABLE_CHANNEL_SLICING
 	   and AS4 (tow4[i][0][j], si4[j], wcfg[i][0][j]);
-	   and ASA (towa[i][0][j], woa[i], wcfg[i][0][j]);
 	   and AN4 (tow4[i][1][j], ni4[j], wcfg[i][1][j]);
-	   and ANA (towa[i][1][j], woa[i], wcfg[i][1][j]);
 	   and AE4 (tow4[i][2][j], ei4[j], wcfg[i][2][j]);
-	   and AEA (towa[i][2][j], woa[i], wcfg[i][2][j]);
 	   and AL4 (tow4[i][3][j], li4[j], wcfg[i][3][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	   and ASAd (towad[i][0][j], woa[i], wcfg[i][0][j]);
+	   and ANAd (towad[i][1][j], woa[i], wcfg[i][1][j]);
+	   and AEAd (towad[i][2][j], woa[i], wcfg[i][2][j]);
+	   and ALAd (towad[i][3][j], woa[i], wcfg[i][3][j]);
+	   c2 ASA4 (.q(towa4[i][0][j]), .a0(woa4[i]), .a1(wcfg[i][0][j]));
+	   c2 ANA4 (.q(towa4[i][1][j]), .a0(woa4[i]), .a1(wcfg[i][1][j]));
+	   c2 AEA4 (.q(towa4[i][2][j]), .a0(woa4[i]), .a1(wcfg[i][2][j]));
+	   c2 ALA4 (.q(towa4[i][3][j]), .a0(woa4[i]), .a1(wcfg[i][3][j]));
+	   assign towa[i][0][j] = towad[i][0][j] | towa4[i][0][j];
+	   assign towa[i][1][j] = towad[i][1][j] | towa4[i][1][j];
+	   assign towa[i][2][j] = towad[i][2][j] | towa4[i][2][j];
+	   assign towa[i][3][j] = towad[i][3][j] | towa4[i][3][j];	   
+ `else
+	   and ASA (towa[i][0][j], woa[i], wcfg[i][0][j]);
+	   and ANA (towa[i][1][j], woa[i], wcfg[i][1][j]);
+	   and AEA (towa[i][2][j], woa[i], wcfg[i][2][j]);
 	   and ALA (towa[i][3][j], woa[i], wcfg[i][3][j]);
+ `endif
 `endif	   
 	end // block: V
 	
@@ -235,16 +299,34 @@ module dcb_xy (/*AUTOARG*/
 	      and AL3 (ton3[i][k][1][j], li3[j][k], ncfg[i][1][j]);
 `ifdef ENABLE_CHANNEL_SLICING
 	      and AS4 (ton4[i][k][0][j], si4[j][k], ncfg[i][0][j]);
-	      and ASA (tona[i][k][0][j], noa[i][k], ncfg[i][0][j]);
 	      and AL4 (ton4[i][k][1][j], li4[j][k], ncfg[i][1][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	      and ASAd (tonad[i][k][0][j], noa[i][k], ncfg[i][0][j]);
+	      and ALAd (tonad[i][k][1][j], noa[i][k], ncfg[i][1][j]);
+	      c2 ASA4 (.q(tona4[i][k][0][j]), .a0(noa4[i][k]), .a1(ncfg[i][0][j]));
+	      c2 ALA4 (.q(tona4[i][k][1][j]), .a0(noa4[i][k]), .a1(ncfg[i][1][j]));
+	      assign tona[i][k][0][j] = tonad[i][k][0][j] | tona4[i][k][0][j];
+	      assign tona[i][k][1][j] = tonad[i][k][1][j] | tona4[i][k][1][j];
+ `else
+	      and ASA (tona[i][k][0][j], noa[i][k], ncfg[i][0][j]);
 	      and ALA (tona[i][k][1][j], noa[i][k], ncfg[i][1][j]);
+ `endif
 `endif	      
 	   end // block: SC
 `ifndef ENABLE_CHANNEL_SLICING
 	   and AS4 (ton4[i][0][j], si4[j], ncfg[i][0][j]);
-	   and ASA (tona[i][0][j], noa[i], ncfg[i][0][j]);
 	   and AL4 (ton4[i][1][j], li4[j], ncfg[i][1][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	   and ASAd (tonad[i][0][j], noa[i], ncfg[i][0][j]);
+	   and ALAd (tonad[i][1][j], noa[i], ncfg[i][1][j]);
+	   c2 ASA4 (.q(tona4[i][0][j]), .a0(noa4[i]), .a1(ncfg[i][0][j]));
+	   c2 ALA4 (.q(tona4[i][1][j]), .a0(noa4[i]), .a1(ncfg[i][1][j]));
+	   assign tona[i][0][j] = tonad[i][0][j] | tona4[i][0][j];
+	   assign tona[i][1][j] = tonad[i][1][j] | tona4[i][1][j];	   	   
+ `else
+	   and ASA (tona[i][0][j], noa[i], ncfg[i][0][j]);
 	   and ALA (tona[i][1][j], noa[i], ncfg[i][1][j]);
+ `endif
 `endif	   
 	end // block: V
 	
@@ -286,24 +368,54 @@ module dcb_xy (/*AUTOARG*/
 	      and AL3 (toe3[i][k][3][j], li3[j][k], ecfg[i][3][j]);
 `ifdef ENABLE_CHANNEL_SLICING
 	      and AS4 (toe4[i][k][0][j], si4[j][k], ecfg[i][0][j]);
-	      and ASA (toea[i][k][0][j], eoa[i][k], ecfg[i][0][j]);
 	      and AW4 (toe4[i][k][1][j], wi4[j][k], ecfg[i][1][j]);
-	      and AWA (toea[i][k][1][j], eoa[i][k], ecfg[i][1][j]);
 	      and AN4 (toe4[i][k][2][j], ni4[j][k], ecfg[i][2][j]);
-	      and ANA (toea[i][k][2][j], eoa[i][k], ecfg[i][2][j]);
 	      and AL4 (toe4[i][k][3][j], li4[j][k], ecfg[i][3][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	      and ASAd (toead[i][k][0][j], eoa[i][k], ecfg[i][0][j]);
+	      and AWAd (toead[i][k][1][j], eoa[i][k], ecfg[i][1][j]);
+	      and ANAd (toead[i][k][2][j], eoa[i][k], ecfg[i][2][j]);
+	      and ALAd (toead[i][k][3][j], eoa[i][k], ecfg[i][3][j]);
+	      c2 ASA4 (.q(toea4[i][k][0][j]), .a0(eoa4[i][k]), .a1(ecfg[i][0][j]));
+	      c2 AWA4 (.q(toea4[i][k][1][j]), .a0(eoa4[i][k]), .a1(ecfg[i][1][j]));
+	      c2 ANA4 (.q(toea4[i][k][2][j]), .a0(eoa4[i][k]), .a1(ecfg[i][2][j]));
+	      c2 ALA4 (.q(toea4[i][k][3][j]), .a0(eoa4[i][k]), .a1(ecfg[i][3][j]));
+	      assign toea[i][k][0][j] = toead[i][k][0][j] | toea4[i][k][0][j];
+	      assign toea[i][k][1][j] = toead[i][k][1][j] | toea4[i][k][1][j];
+	      assign toea[i][k][2][j] = toead[i][k][2][j] | toea4[i][k][2][j];
+	      assign toea[i][k][3][j] = toead[i][k][3][j] | toea4[i][k][3][j];	      
+ `else
+	      and ASA (toea[i][k][0][j], eoa[i][k], ecfg[i][0][j]);
+	      and AWA (toea[i][k][1][j], eoa[i][k], ecfg[i][1][j]);
+	      and ANA (toea[i][k][2][j], eoa[i][k], ecfg[i][2][j]);
 	      and ALA (toea[i][k][3][j], eoa[i][k], ecfg[i][3][j]);
+ `endif
 `endif	      
 	   end // block: SC
 `ifndef ENABLE_CHANNEL_SLICING
 	   and AS4 (toe4[i][0][j], si4[j], ecfg[i][0][j]);
-	   and ASA (toea[i][0][j], eoa[i], ecfg[i][0][j]);
 	   and AW4 (toe4[i][1][j], wi4[j], ecfg[i][1][j]);
-	   and AWA (toea[i][1][j], eoa[i], ecfg[i][1][j]);
 	   and AN4 (toe4[i][2][j], ni4[j], ecfg[i][2][j]);
-	   and ANA (toea[i][2][j], eoa[i], ecfg[i][2][j]);
 	   and AL4 (toe4[i][3][j], li4[j], ecfg[i][3][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	   and ASAd (toead[i][0][j], eoa[i], ecfg[i][0][j]);
+	   and AWAd (toead[i][1][j], eoa[i], ecfg[i][1][j]);
+	   and ANAd (toead[i][2][j], eoa[i], ecfg[i][2][j]);
+	   and ALAd (toead[i][3][j], eoa[i], ecfg[i][3][j]);
+	   c2 ASA4 (.q(toea4[i][0][j]), .a0(eoa4[i]), .a1(ecfg[i][0][j]));
+	   c2 AWA4 (.q(toea4[i][1][j]), .a0(eoa4[i]), .a1(ecfg[i][1][j]));
+	   c2 ANA4 (.q(toea4[i][2][j]), .a0(eoa4[i]), .a1(ecfg[i][2][j]));
+	   c2 ALA4 (.q(toea4[i][3][j]), .a0(eoa4[i]), .a1(ecfg[i][3][j]));
+	   assign toea[i][0][j] = toead[i][0][j] | toea4[i][0][j];
+	   assign toea[i][1][j] = toead[i][1][j] | toea4[i][1][j];
+	   assign toea[i][2][j] = toead[i][2][j] | toea4[i][2][j];
+	   assign toea[i][3][j] = toead[i][3][j] | toea4[i][3][j];	   
+ `else
+	   and ASA (toea[i][0][j], eoa[i], ecfg[i][0][j]);
+	   and AWA (toea[i][1][j], eoa[i], ecfg[i][1][j]);
+	   and ANA (toea[i][2][j], eoa[i], ecfg[i][2][j]);
 	   and ALA (toea[i][3][j], eoa[i], ecfg[i][3][j]);
+ `endif
 `endif	   
 	end // block: V
 	
@@ -346,24 +458,54 @@ module dcb_xy (/*AUTOARG*/
 	      and AE3 (tol3[i][k][3][j], ei3[j][k], lcfg[i][3][j]);
 `ifdef ENABLE_CHANNEL_SLICING
 	      and AS4 (tol4[i][k][0][j], si4[j][k], lcfg[i][0][j]);
-	      and ASA (tola[i][k][0][j], loa[i][k], lcfg[i][0][j]);
 	      and AW4 (tol4[i][k][1][j], wi4[j][k], lcfg[i][1][j]);
-	      and AWA (tola[i][k][1][j], loa[i][k], lcfg[i][1][j]);
 	      and AN4 (tol4[i][k][2][j], ni4[j][k], lcfg[i][2][j]);
-	      and ANA (tola[i][k][2][j], loa[i][k], lcfg[i][2][j]);
 	      and AE4 (tol4[i][k][3][j], ei4[j][k], lcfg[i][3][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	      and ASAd (tolad[i][k][0][j], loa[i][k], lcfg[i][0][j]);
+	      and AWAd (tolad[i][k][1][j], loa[i][k], lcfg[i][1][j]);
+	      and ANAd (tolad[i][k][2][j], loa[i][k], lcfg[i][2][j]);
+	      and AEAd (tolad[i][k][3][j], loa[i][k], lcfg[i][3][j]);
+	      c2 ASA4 (.q(tola4[i][k][0][j]), .a0(loa4[i][k]), .a1(lcfg[i][0][j]));
+	      c2 AWA4 (.q(tola4[i][k][1][j]), .a0(loa4[i][k]), .a1(lcfg[i][1][j]));
+	      c2 ANA4 (.q(tola4[i][k][2][j]), .a0(loa4[i][k]), .a1(lcfg[i][2][j]));
+	      c2 AEA4 (.q(tola4[i][k][3][j]), .a0(loa4[i][k]), .a1(lcfg[i][3][j]));
+	      assign tola[i][k][0][j] = tolad[i][k][0][j] | tola4[i][k][0][j];
+	      assign tola[i][k][1][j] = tolad[i][k][1][j] | tola4[i][k][1][j];
+	      assign tola[i][k][2][j] = tolad[i][k][2][j] | tola4[i][k][2][j];
+	      assign tola[i][k][3][j] = tolad[i][k][3][j] | tola4[i][k][3][j];	      
+ `else
+	      and ASA (tola[i][k][0][j], loa[i][k], lcfg[i][0][j]);
+	      and AWA (tola[i][k][1][j], loa[i][k], lcfg[i][1][j]);
+	      and ANA (tola[i][k][2][j], loa[i][k], lcfg[i][2][j]);
 	      and AEA (tola[i][k][3][j], loa[i][k], lcfg[i][3][j]);
+ `endif
 `endif	      
 	   end // block: SC
 `ifndef ENABLE_CHANNEL_SLICING
 	   and AS4 (tol4[i][0][j], si4[j], lcfg[i][0][j]);
-	   and ASA (tola[i][0][j], loa[i], lcfg[i][0][j]);
 	   and AW4 (tol4[i][1][j], wi4[j], lcfg[i][1][j]);
-	   and AWA (tola[i][1][j], loa[i], lcfg[i][1][j]);
 	   and AN4 (tol4[i][2][j], ni4[j], lcfg[i][2][j]);
-	   and ANA (tola[i][2][j], loa[i], lcfg[i][2][j]);
 	   and AE4 (tol4[i][3][j], ei4[j], lcfg[i][3][j]);
+ `ifdef ENABLE_BUFFERED_CLOS
+	   and ASAd (tolad[i][0][j], loa[i], lcfg[i][0][j]);
+	   and AWAd (tolad[i][1][j], loa[i], lcfg[i][1][j]);
+	   and ANAd (tolad[i][2][j], loa[i], lcfg[i][2][j]);
+	   and AEAd (tolad[i][3][j], loa[i], lcfg[i][3][j]);
+	   c2 ASA4 (.q(tola4[i][0][j]), .a0(loa4[i]), .a1(lcfg[i][0][j]));
+	   c2 AWA4 (.q(tola4[i][1][j]), .a0(loa4[i]), .a1(lcfg[i][1][j]));
+	   c2 ANA4 (.q(tola4[i][2][j]), .a0(loa4[i]), .a1(lcfg[i][2][j]));
+	   c2 AEA4 (.q(tola4[i][3][j]), .a0(loa4[i]), .a1(lcfg[i][3][j]));
+	   assign tola[i][0][j] = tolad[i][0][j] | tola4[i][0][j];
+	   assign tola[i][1][j] = tolad[i][1][j] | tola4[i][1][j];
+	   assign tola[i][2][j] = tolad[i][2][j] | tola4[i][2][j];
+	   assign tola[i][3][j] = tolad[i][3][j] | tola4[i][3][j];	   
+ `else
+	   and ASA (tola[i][0][j], loa[i], lcfg[i][0][j]);
+	   and AWA (tola[i][1][j], loa[i], lcfg[i][1][j]);
+	   and ANA (tola[i][2][j], loa[i], lcfg[i][2][j]);
 	   and AEA (tola[i][3][j], loa[i], lcfg[i][3][j]);
+ `endif
 `endif	   
 	end // block: V
 	

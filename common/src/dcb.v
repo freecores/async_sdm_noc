@@ -28,7 +28,7 @@ module dcb (
    // Inputs
    i0, i1, i2, i3, oa, i4, cfg
 `ifdef ENABLE_BUFFERED_CLOS
-   , o4a
+   , oa4
 `endif
    );
 

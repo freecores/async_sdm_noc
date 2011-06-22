@@ -124,90 +124,123 @@ module dclos (
 
    dcb #(.NN(NN), .MN(MN), .DW(DW))
    SIM (
-       .o0  ( imos0    ),
-       .o1  ( imos1    ),
-       .o2  ( imos2    ),
-       .o3  ( imos3    ),
-       .o4  ( imos4    ),
-       .ia  ( sia      ),
-       .i0  ( si0      ),
-       .i1  ( si1      ),
-       .i2  ( si2      ),
-       .i3  ( si3      ),
-       .i4  ( si4      ),
-       .oa  ( imosa    ),
-       .cfg ( imcfg[0] )
-       );
+	.o0  ( imos0    ),
+	.o1  ( imos1    ),
+	.o2  ( imos2    ),
+	.o3  ( imos3    ),
+	.o4  ( imos4    ),
+	.ia  ( sia      ),
+	.i0  ( si0      ),
+	.i1  ( si1      ),
+	.i2  ( si2      ),
+	.i3  ( si3      ),
+	.i4  ( si4      ),
+	.oa  ( imosa    ),
+`ifdef ENABLE_BUFFERED_CLOS
+	.oa4 ( imosa4   ),
+`endif
+	.cfg ( imcfg[0] )
+	);
 
    dcb #(.NN(NN), .MN(MN), .DW(DW))
    WIM (
-       .o0  ( imow0    ),
-       .o1  ( imow1    ),
-       .o2  ( imow2    ),
-       .o3  ( imow3    ),
-       .o4  ( imow4    ),
-       .ia  ( wia      ),
-       .i0  ( wi0      ),
-       .i1  ( wi1      ),
-       .i2  ( wi2      ),
-       .i3  ( wi3      ),
-       .i4  ( wi4      ),
-       .oa  ( imowa    ),
-       .cfg ( imcfg[1] )
-       );
+	.o0  ( imow0    ),
+	.o1  ( imow1    ),
+	.o2  ( imow2    ),
+	.o3  ( imow3    ),
+	.o4  ( imow4    ),
+	.ia  ( wia      ),
+	.i0  ( wi0      ),
+	.i1  ( wi1      ),
+	.i2  ( wi2      ),
+	.i3  ( wi3      ),
+	.i4  ( wi4      ),
+	.oa  ( imowa    ),
+`ifdef ENABLE_BUFFERED_CLOS
+	.oa4 ( imowa4   ),
+`endif
+	.cfg ( imcfg[1] )
+	);
    
    dcb #(.NN(NN), .MN(MN), .DW(DW))
    NIM (
-       .o0  ( imon0    ),
-       .o1  ( imon1    ),
-       .o2  ( imon2    ),
-       .o3  ( imon3    ),
-       .o4  ( imon4    ),
-       .ia  ( nia      ),
-       .i0  ( ni0      ),
-       .i1  ( ni1      ),
-       .i2  ( ni2      ),
-       .i3  ( ni3      ),
-       .i4  ( ni4      ),
-       .oa  ( imona    ),
-       .cfg ( imcfg[2] )
+	.o0  ( imon0    ),
+	.o1  ( imon1    ),
+	.o2  ( imon2    ),
+	.o3  ( imon3    ),
+	.o4  ( imon4    ),
+	.ia  ( nia      ),
+	.i0  ( ni0      ),
+	.i1  ( ni1      ),
+	.i2  ( ni2      ),
+	.i3  ( ni3      ),
+	.i4  ( ni4      ),
+	.oa  ( imona    ),
+`ifdef ENABLE_BUFFERED_CLOS
+	.oa4 ( imona4   ),
+`endif
+	.cfg ( imcfg[2] )
        );
    
    dcb #(.NN(NN), .MN(MN), .DW(DW))
    EIM (
-       .o0  ( imoe0    ),
-       .o1  ( imoe1    ),
-       .o2  ( imoe2    ),
-       .o3  ( imoe3    ),
-       .o4  ( imoe4    ),
-       .ia  ( eia      ),
-       .i0  ( ei0      ),
-       .i1  ( ei1      ),
-       .i2  ( ei2      ),
-       .i3  ( ei3      ),
-       .i4  ( ei4      ),
-       .oa  ( imoea    ),
-       .cfg ( imcfg[3] )
-       );
+	.o0  ( imoe0    ),
+	.o1  ( imoe1    ),
+	.o2  ( imoe2    ),
+	.o3  ( imoe3    ),
+	.o4  ( imoe4    ),
+	.ia  ( eia      ),
+	.i0  ( ei0      ),
+	.i1  ( ei1      ),
+	.i2  ( ei2      ),
+	.i3  ( ei3      ),
+	.i4  ( ei4      ),
+	.oa  ( imoea    ),
+`ifdef ENABLE_BUFFERED_CLOS
+	.oa4 ( imoea4   ),
+`endif
+	.cfg ( imcfg[3] )
+	);
 
    dcb #(.NN(NN), .MN(MN), .DW(DW))
    LIM (
-       .o0  ( imol0    ),
-       .o1  ( imol1    ),
-       .o2  ( imol2    ),
-       .o3  ( imol3    ),
-       .o4  ( imol4    ),
-       .ia  ( lia      ),
-       .i0  ( li0      ),
-       .i1  ( li1      ),
-       .i2  ( li2      ),
-       .i3  ( li3      ),
-       .i4  ( li4      ),
-       .oa  ( imola    ),
-       .cfg ( imcfg[4] )
-       );
+	.o0  ( imol0    ),
+	.o1  ( imol1    ),
+	.o2  ( imol2    ),
+	.o3  ( imol3    ),
+	.o4  ( imol4    ),
+	.ia  ( lia      ),
+	.i0  ( li0      ),
+	.i1  ( li1      ),
+	.i2  ( li2      ),
+	.i3  ( li3      ),
+	.i4  ( li4      ),
+	.oa  ( imola    ),
+`ifdef ENABLE_BUFFERED_CLOS
+	.oa4 ( imola4   ),
+`endif
+	.cfg ( imcfg[4] )
+	);
 
    generate for(i=0; i<MN; i++) begin: IMSHF
+`ifdef ENABLE_BUFFERED_CLOS
+      // the buffer stage between IM and CM
+ `ifdef ENABLE_CHANNEL_SLICING
+      for(j=0; j<SCN; j++) begin:SC
+	 pipe4 #(.DW(2))
+	 P (
+	    .o0 ( cmi0[i][0]  ),
+	    .o1 ( cmi1[i][0]  ),
+	    .o2 ( cmi2[i][0]  ),
+	    .o3 ( cmi3[i][0]  ),
+	    .ia ( imosa[i]    ),
+	    .i0 ( imos0[i]    ),
+	    .i1 ( imos1[i]    ),
+	    .i2 ( imos3[i]    ),
+	    .i3 ( imos4[i]    ),
+	    
+
+`else
       // shuffle the interconnects between IMs and CMs
       assign cmi0[i][0] = imos0[i];
       assign cmi1[i][0] = imos1[i];
@@ -243,7 +276,8 @@ module dclos (
       assign cmi3[i][4] = imol3[i];
       assign cmi4[i][4] = imol4[i];
       assign imola[i] = cmia[i][4];
-
+`endif // !`ifdef ENABLE_BUFFERED_CLOS
+      
       // CM modules
       dcb_xy #(.VCN(1), .VCW(DW))
       CM (
@@ -303,10 +337,17 @@ module dclos (
 	  .li3   ( cmi3[i][4]   ), 
 	  .li4   ( cmi4[i][4]   ), 
 	  .soa   ( cmoa[i][0]   ),
-	  .woa   ( cmoa[i][1]   ), 
-	  .noa   ( cmoa[i][2]   ), 
-	  .eoa   ( cmoa[i][3]   ), 
-	  .loa   ( cmoa[i][4]   ), 
+	  .woa   ( cmoa[i][1]   ),
+	  .noa   ( cmoa[i][2]   ),
+	  .eoa   ( cmoa[i][3]   ),
+	  .loa   ( cmoa[i][4]   ),
+`ifdef ENABLE_BUFFERED_CLOS
+	  .soa4  ( cmoa4[i][0]  ),
+	  .woa4  ( cmoa4[i][1]  ),
+	  .noa4  ( cmoa4[i][2]  ),
+	  .eoa4  ( cmoa4[i][3]  ),
+	  .loa4  ( cmoa4[i][4]  ),
+`endif
 	  .wcfg  ( wcfg[i]      ), 
 	  .ecfg  ( ecfg[i]      ), 
 	  .lcfg  ( lcfg[i]      ), 
@@ -349,6 +390,14 @@ module dclos (
       assign lo3[i] = cmo3[i][4];
       assign lo4[i] = cmo4[i][4];
       assign cmoa[i][4] = loa[i];
+
+`ifdef ENABLE_BUFFERED_CLOS
+      assign cmoa4[i][0] = soa4[i];
+      assign cmoa4[i][1] = woa4[i];
+      assign cmoa4[i][2] = noa4[i];
+      assign cmoa4[i][3] = eoa4[i];
+      assign cmoa4[i][4] = loa4[i];
+`endif
    end // block: IMSHF
       
    endgenerate

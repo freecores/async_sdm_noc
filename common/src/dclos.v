@@ -35,6 +35,7 @@ module dclos (
 `ifdef ENABLE_BUFFERED_CLOS
    , soa4, woa4, noa4, eoa4, loa4
 `endif
+   , rst_n
    );
    
    parameter MN = 2;		// number of CMs
@@ -78,6 +79,8 @@ module dclos (
    input [MN-1:0][3:0] 	       wcfg, ecfg, lcfg;
    // no OMs
 
+   input 		       rst_n; // globale active low reset
+
    // output of IMs
    wire [MN-1:0][SCN-1:0]      imos0, imos1, imos2, imos3;
    wire [MN-1:0][SCN-1:0]      imow0, imow1, imow2, imow3;
@@ -89,12 +92,16 @@ module dclos (
    wire [MN-1:0][SCN-1:0]      imosa, imowa, imona, imoea, imola;
  `ifdef ENABLE_BUFFERED_CLOS
    wire [MN-1:0][SCN-1:0]      imosa4, imowa4, imona4, imoea4, imola4;
+   wire [MN-1:0][SCN-1:0]      imosdeca, imowdeca, imondeca, imoedeca, imoldeca;
+   wire [MN-1:0][SCN-1:0]      imoseofan, imoweofan, imoneofan, imoeeofan, imoleofan;
  `endif
 `else
    wire [MN-1:0] 	       imos4, imow4, imon4, imoe4, imol4;
    wire [MN-1:0] 	       imosa, imowa, imona, imoea, imola;
  `ifdef ENABLE_BUFFERED_CLOS
+   wire [MN-1:0]               imosdeca, imowdeca, imondeca, imoedeca, imoldeca;
    wire [MN-1:0] 	       imosa4, imowa4, imona4, imoea4, imola4;
+   wire [MN-1:0] 	       imoseofan, imoweofan, imoneofan, imoeeofan, imoleofan;
  `endif
 `endif
 
@@ -102,8 +109,14 @@ module dclos (
    wire [MN-1:0][4:0][SCN-1:0] cmi0, cmi1, cmi2, cmi3;
 `ifdef ENABLE_CHANNEL_SLICING
    wire [MN-1:0][4:0][SCN-1:0] cmi4, cmia;
+ `ifdef ENABLE_BUFFERED_CLOS
+   wire [MN-1:0][4:0][SCN-1:0] cmian;
+ `endif
 `else
    wire [MN-1:0][4:0] 	       cmi4, cmia;
+ `ifdef ENABLE_BUFFERED_CLOS
+   wire [MN-1:0][4:0] 	       cmian;
+ `endif
 `endif
 
    // output of CMs
@@ -226,7 +239,7 @@ module dclos (
 `ifdef ENABLE_BUFFERED_CLOS
       // the buffer stage between IM and CM
  `ifdef ENABLE_CHANNEL_SLICING
-      for(j=0; j<SCN; j++) begin:SC
+      for(j=0; j<SCN; j++) begin:SC_S
 	 pipe4 #(.DW(2))
 	 P (
 	    .o0 ( cmi0[i][0]  ),
@@ -240,15 +253,32 @@ module dclos (
 	    .i3 ( imos4[i]    ),
 	    .oa ( cmian[i][0]  )
 	    );
-
+	 
 	 pipen #(.DW(1))
 	 PEoF (
-	       .d_in_a  ( imosa4[i]   ),
-	       .d_out   ( cmi4[i][0]  ),
-	       .d_in    ( imos4[i]    ),
-	       .d_out_a ( cmian[i][0] ),
+	       .d_in_a  (              ),  // imosa4[i]    ),
+	       .d_out   ( cmi4[i][0]   ),
+	       .d_in    ( imos4[i]     ),
+	       .d_out_a ( imoseofan[i] ),
 	       );
 	 
+	 ppc PCTL (
+		   .deca  ( imosdeca[i]   ),
+		   .dia   ( imosa4[i]     ),
+		   .eof   ( cmi4[i][0]    ), 
+		   .doa   ( cmia[i][0]    ),
+		   .dec   ( 
+		   );
+	 
+	 assign cmian[i][0] = (~cmia[i][0])&rst_n;
+	 assign imoseofan[i] = (imosdeca[i])&rst_n;
+      end // block: SC
+
+      pipen #(.DW(4))
+      S_PDIR (
+	      .d_in_a (
+
+      
 	 
 
 `else

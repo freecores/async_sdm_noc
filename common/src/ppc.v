@@ -21,16 +21,16 @@
 
 module ppc(/*AUTOARG*/
    // Outputs
-   decan,
+   deca, dia,
    // Inputs
-   eof, doa
+   eof, doa, dec
    );
-   input 	      eof, doa;
-   wire 	      deca;	// the ack to eof
-   output 	      decan;	// the ack to routing requests
+   input 	      eof, doa, dec;
+   output 	      deca;	// the ack to eof
+   output             dia;	// the pipe stage input ack
 
    c2p CEoF (.q(deca), .a(doa), .b(eof));
-   assign decan = ~deca;
+   c2n CDIA (.q(dia), .a(eof|doa), .b(dec&(~deca)));
    
 endmodule // ppc
 

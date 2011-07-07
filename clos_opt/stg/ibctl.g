@@ -40,6 +40,7 @@ eofa- eof-
 dia+/2 eof-
 eof- doa-/2
 eof- dia-/2
+dec- dia-/2
 doa-/2 deca+
 doa-/2 eofa+
 dia-/2 dec+

@@ -24,8 +24,13 @@ module im (/*AUTOARG*/
    // Outputs
    do0, do1, do2, do3, deco, dia, do4,
    // Inputs
-   di0, di1, di2, di3, deci, di4, doa, doa4, rst_n
+   di0, di1, di2, di3, deci, di4, doa, doa4
+`ifndef ENABLE_CRRD
+   , cms
+`endif
+   , rst_n
    );
+   
    parameter MN = 2;		// the number of CMs
    parameter NN = 2;		// the number of IPs in one IM
    parameter DW = 8;		// the data width of a single IP
@@ -56,20 +61,21 @@ module im (/*AUTOARG*/
 
    input rst_n;			// global active low reset
 
-   wire cfg;			// the configuration for the IM
+   wire [MN-1:0][NN-1:0]        cfg;			// the configuration for the IM
    wire [MN-1:0][SCN-1:0]       imo0, imo1, imo2, imo3; // the IM output data
    wire [MN-1:0][SN-1:0]        imodec;			// the IM output dec
 `ifdef ENABLE_CHANNEL_SLICING
    wire [MN-1:0][SCN-1:0] 	imo4;	     // IM output data
    wire [MN-1:0][SCN-1:0] 	imoa, imoa4; // IM output ack
-   wire [MN-1:0][SCN-1:0] 	eofan, eofan, doan, deca, decan; // stage control acks
+   wire [MN-1:0][SCN-1:0] 	eofan, doan, deca; // stage control acks
 `else
    wire [MN-1:0] 		imo4;	     // IM data output
    wire [MN-1:0] 		imoa, imoa4; // IM output ack
-   wire [MN-1:0]                eofan, eofan, doan, deca, decan; // stage control acks
+   wire [MN-1:0]                eofan, doan, deca; // stage control acks
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
-
-   genvar 			i;
+   wire [MN-1:0] 		decan;
+ 		
+   genvar 			i, j;
 
    // the data crossbar
    dcb #(.NN(NN), .MN(MN), .DW(DW))
@@ -134,15 +140,69 @@ module im (/*AUTOARG*/
 		  .d_in_a  (             ),
 		  .d_out   ( do4[i][j]   ),
 		  .d_in    ( imo4[i][j]  ),
-		  .d_out_a ( eofa[i][j]  ),
+		  .d_out_a ( eofan[i][j] ),
 		  );
 	    
 	    ppc PCTL (
-		      .deca   ( deca[i][j] ),
-		      .
-	      
-	      pipen #(.DW(SN))
-	    PDEC (
-		  
+		      .deca   ( deca[i][j]  ),
+		      .dia    ( imoa4[i][j] ),
+		      .eof    ( do4[i][j]   ),
+		      .doa    ( doa[i][j]   ),
+		      .dec    ( |deco[i]    )
+		      );
 
+	    assign doan[i][j] = (~doa[i][j])&rst_n;
+	    assign eofan[i][j] = (~deca[i][j])&rst_n;
+	 end // block: SC
+
+	 assign decan[i] = (~&deca[i])&rst_n;
+	 
+`else // !`ifdef ENABLE_CHANNEL_SLICING
+	 pipe4 #(.DW(DW))
+	 P (
+	    .o0 ( do0[i]  ),
+	    .o1 ( do1[i]  ),
+	    .o2 ( do2[i]  ),
+	    .o3 ( do3[i]  ),
+	    .ia ( imoa[i] ),
+	    .i0 ( imo0[i] ),
+	    .i1 ( imo1[i] ),
+	    .i2 ( imo2[i] ),
+	    .i3 ( imo3[i] ),
+	    .oa ( doan[i] )
+	    );
+	 
+	 pipen #(.DW(1))
+	 PEoF (
+	       .d_in_a  (          ),
+	       .d_out   ( do4[i]   ),
+	       .d_in    ( imo4[i]  ),
+	       .d_out_a ( eofan[i] )
+	       );
+	 
+	 ppc PCTL (
+		   .deca   ( deca[i]  ),
+		   .dia    ( imoa4[i] ),
+		   .eof    ( do4[i]   ),
+		   .doa    ( doa[i]   ),
+		   .dec    ( |deco[i] )
+		   );
+
+	 assign doan[i] = (~doa[i])&rst_n;
+	 assign eofan[i] = (~deca[i])&rst_n;
+
+	 assign decan[i] = (~deca[i])&rst_n;
+	 
+`endif // !`ifdef ENABLE_CHANNEL_SLICING
+
+	 pipen #(.DW(SN))
+	 PDEC (
+	       .d_in_a   (           ),
+	       .d_out    ( deco[i]   ),
+	       .d_in     ( imodec[i] ),
+	       .d_out_a  ( decan[i]  )
+	       );
+      end // block: OPD
+   endgenerate
+   
 endmodule // im

@@ -24,11 +24,11 @@ module im (/*AUTOARG*/
    // Outputs
    do0, do1, do2, do3, deco, dia, do4,
    // Inputs
-   di0, di1, di2, di3, deci, di4, doa, doa4
+   di0, di1, di2, di3, deci, di4, doa,
 `ifndef ENABLE_CRRD
-   , cms
+   cms,
 `endif
-   , rst_n
+   rst_n
    );
    
    parameter MN = 2;		// the number of CMs
@@ -47,12 +47,12 @@ module im (/*AUTOARG*/
    input [NN-1:0][SCN-1:0] 	di4; // data input
    output [NN-1:0][SCN-1:0]     dia; // input ack
    output [MN-1:0][SCN-1:0] 	do4; // data output
-   input [MN-1:0][SCN-1:0] 	doa, doa4; // output ack
+   input [MN-1:0][SCN-1:0] 	doa; // output ack
 `else
    input [NN-1:0] 		di4; // data input
    output [NN-1:0] 		dia; // input ack
    output [MN-1:0] 		do4; // data output
-   input [MN-1:0] 		doa, doa4; // output ack
+   input [MN-1:0] 		doa; // output ack
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
    
 `ifndef ENABLE_CRRD

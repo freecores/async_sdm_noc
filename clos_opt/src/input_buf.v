@@ -9,12 +9,25 @@
  
  License: LGPL 3.0 or later
  
- Input buffer for Clos-opt routers.
+ Input buffer for Wormhole/SDM routers.
  *** SystemVerilog is used ***
  
+ References
+ * Lookahead pipelines 
+     Montek Singh and Steven M. Nowick, The design of high-performance dynamic asynchronous pipelines: lookahead style, IEEE Transactions on Very Large Scale Integration (VLSI) Systems, 2007(15), 1256-1269. doi:10.1109/TVLSI.2007.902205
+ * Channel slicing
+     Wei Song and Doug Edwards, A low latency wormhole router for asynchronous on-chip networks, Asia and South Pacific Design Automation Conference, 2010, 437-443.
+ * SDM
+     Wei Song and Doug Edwards, Asynchronous spatial division multiplexing router, Microprocessors and Microsystems, 2011(35), 85-97.
+ 
  History:
- 13/06/2009  Initial version. <wsong83@gmail.com>
-  
+ 05/05/2009  Initial version. <wsong83@gmail.com>
+ 20/09/2010  Supporting channel slicing and SDM using macro difinitions. <wsong83@gmail.com>
+ 24/05/2011  Clean up for opensource. <wsong83@gmail.com>
+ 01/06/2011  Use the comp4 common comparator rather than the chain_comparator defined in this module. <wsong83@gmail.com>
+ 21/06/2011  Move the eof logic in every pipeline stage outside the pipe4 module. <wsong83@gmail.com>
+ 12/07/2011  Preparation for the buffered Clos switch. <wsong83@gmail.com>
+ 
 */
 
 // the router structure definitions
@@ -22,9 +35,9 @@
 
 module inp_buf (/*AUTOARG*/
    // Outputs
-   o0, o1, o2, o3, o4, ia, arb_r,
+   o0, o1, o2, o3, o4, ia, deco,
    // Inputs
-   rst_n, i0, i1, i2, i3, i4, oa, addrx, addry, arb_ra
+   rst_n, i0, i1, i2, i3, i4, oa, addrx, addry
    );
 
    //-------------------------- parameters ---------------------------------------//
@@ -38,11 +51,15 @@ module inp_buf (/*AUTOARG*/
    input                  rst_n;          // global reset, active low
    input [SCN-1:0] 	  i0, i1, i2, i3; // data input
    output [SCN-1:0] 	  o0, o1, o2, o3; // data output
+`ifdef ENABLE_CHANNEL_SLICING
+   input [SCN-1:0] 	  i4, oa;
+   output [SCN-1:0] 	  o4, ia;
+`else
    input 		  i4, oa;
    output 		  o4, ia;
-   input [7:0] 		  addrx, addry;
-   output [RN-1:0] 	  arb_r;
-   input 		  arb_ra;
+`endif
+   input [7:0] 		  addrx, addry; // local addresses in 1-of-4 encoding
+   output [RN-1:0] 	  deco;	// the decoded routing requests
    
    //-------------------------- control signals ---------------------------------------//
    wire 		  rten;	               // routing enable
@@ -53,32 +70,78 @@ module inp_buf (/*AUTOARG*/
    wire [4:0] 		  dec_reg;             // the routing decision kept by C-gates
    wire 		  x_equal;             // addr x = target x
    wire 		  rt_err;              // route decoder error
-   wire                   rt_ack;	       // route build ack
    
-   wire 		  rtrst;	       // rt decode reset
-   wire [PD:0] 		  pd4, pda, pdan;      // data wires for the internal pipeline satges
+`ifdef ENABLE_CHANNEL_SLICING
+   wire [SCN-1:0] 	  deca;	// the ack for routing requests
+   wire [PD:0][SCN-1:0]   pd4, pda, pdan, pd4an; // data wires for the internal pipeline stages
+
+`else
+   wire 		  deca;	// the ack for routing requests
+   wire [PD:0] 		  pd4, pda, pdan, pd4an; // data wires for the internal pipeline satges
+`endif // !`ifdef ENABLE_CHANNEL_SLICING
+   wire 		  decan;
 
    genvar 		  i, j;
 
    //------------------------- pipelines ------------------------------------- //
+   generate for(i=0; i<PD; i++) begin: DP
+`ifdef ENABLE_CHANNEL_SLICING
+      for(j=0; j<SCN; j++) begin: SC
+	 pipe4 #(.DW(2))
+	 P (
+	    .o0  ( pd0[i][j]   ),
+	    .o1  ( pd1[i][j]   ),
+	    .o2  ( pd2[i][j]   ),
+	    .o3  ( pd3[i][j]   ),
+	    .ia  ( pda[i+1][j] ),
+	    .i0  ( pd0[i+1][j] ),
+	    .i1  ( pd1[i+1][j] ),
+	    .i2  ( pd2[i+1][j] ),
+	    .i3  ( pd3[i+1][j] ),
+	    .oa  ( pdan[i][j]  )
+	    );
+
+	 pipen #(.DW(1))
+	 PEoF (
+	       .d_in_a  (             ),
+	       .d_out   ( pd4[i][j]   ),
+	       .d_in    ( pd4[i+1][j] ),
+	       .d_out_a ( pd4an[i][j] )
+	       );
+	 
+      end // block: SC
+      
+
+`else // !`ifdef ENABLE_CHANNEL_SLICING
       pipe4 #(.DW(DW))
       P (
 	 .o0  ( pd0[i]   ),
 	 .o1  ( pd1[i]   ),
 	 .o2  ( pd2[i]   ),
 	 .o3  ( pd3[i]   ),
-	 .o4  ( pd4[i]   ),
 	 .ia  ( pda[i+1] ),
 	 .i0  ( pd0[i+1] ),
 	 .i1  ( pd1[i+1] ),
 	 .i2  ( pd2[i+1] ),
 	 .i3  ( pd3[i+1] ),
-	 .i4  ( pd4[i+1] ),
 	 .oa  ( pdan[i]  )
 	 );
 
+      pipen #(.DW(1))
+      PEoF (
+	    .d_in_a  (          ),
+	    .d_out   ( pd4[i]   ),
+	    .d_in    ( pd4[i+1] ),
+	    .d_out_a ( pd4an[i] )
+	    );
+      
+`endif // !`ifdef ENABLE_CHANNEL_SLICING
+   end // block: DP
+   endgenerate
+
    generate for(i=1; i<PD; i++) begin: DPA
       assign pdan[i] = rst_n ? ~(pda[i]|pd4[i-1]) : 0;
+      assign pd4an[i] = pdan[i];
    end
    endgenerate
 
@@ -151,6 +214,22 @@ module inp_buf (/*AUTOARG*/
 
    // ------------------------ pipeline control ------------------------------ //
    
+`ifdef ENABLE_CHANNEL_SLICING
+   for(j=0; j<SCN; j++) begin: SC
+      // the sub-channel controller
+      subc_ctl SCH_C (
+		      .nack     ( pdan[0][j]  ),
+		      .rt_rst   ( rtrst[j]    ),
+		      .ai2cb    ( oa[j]       ),
+		      .ack      ( pda[1][j]   ),
+		      .eof      ( pd4[0][j]   ),
+		      .rt_ra    ( rt_ack      ),
+		      .rt_err   ( rt_err      ),
+		      .rst_n    ( rst_n       )
+		      );
+      assign pd4an[0][j] = pdan[0][j];
+   end // block: SC
+`else // !`ifdef ENABLE_CHANNEL_SLICING
    subc_ctl SCH_C (
 		   .nack     ( pdan[0]  ),
 		   .rt_rst   ( rtrst    ),
@@ -161,7 +240,9 @@ module inp_buf (/*AUTOARG*/
 		   .rt_err   ( rt_err   ),
 		   .rst_n    ( rst_n    )
 		   );
-  
+   assign pd4an[0] = pdan[0];
+`endif // !`ifdef ENABLE_CHANNEL_SLICING
+   
    // the router controller part
    assign rten = ~rt_ack;
    assign frame_end = &rtrst;
@@ -170,7 +251,6 @@ endmodule // inp_buf
 
 
 // the routing decision making procedure, comparitors
-// 13/06/2011 make it QDI
 module routing_decision (
 			 addrx
 			 ,addry
@@ -183,9 +263,9 @@ module routing_decision (
    input [7:0] addrx;
    input [7:0] addry;
    
-   input [7:0] pipe_xd;
-   input [7:0] pipe_yd;
-   output [5:0] decision;
+   input   [7:0]   pipe_xd;
+   input [7:0] 	   pipe_yd;
+   output [5:0]    decision;
 
    wire [2:0] 	   x_cmp [1:0];
    wire [2:0] 	   y_cmp [1:0];

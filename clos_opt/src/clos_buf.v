@@ -239,4 +239,43 @@ module clos (/*AUTOARG*/);
 	       .rst_n ( rst_n    )
 	       );
 	 
+	 assign so0[i] = cmo0[i][0];
+	 assign so1[i] = cmo1[i][0];
+	 assign so2[i] = cmo2[i][0];
+	 assign so3[i] = cmo3[i][0];
+	 assign cmoa[i][0] = soa[i];
+	 assign cmoa[i][0] = soa4[i];
+	 
+	 assign wo0[i] = cmo0[i][1];
+	 assign wo1[i] = cmo1[i][1];
+	 assign wo2[i] = cmo2[i][1];
+	 assign wo3[i] = cmo3[i][1];
+	 assign cmoa[i][1] = woa[i];
+	 assign cmoa[i][1] = woa4[i];
+	 
+	 assign no0[i] = cmo0[i][2];
+	 assign no1[i] = cmo1[i][2];
+	 assign no2[i] = cmo2[i][2];
+	 assign no3[i] = cmo3[i][2];
+	 assign cmoa[i][2] = noa[i];
+	 assign cmoa[i][2] = noa4[i];
+	 
+	 assign eo0[i] = cmo0[i][3];
+	 assign eo1[i] = cmo1[i][3];
+	 assign eo2[i] = cmo2[i][3];
+	 assign eo3[i] = cmo3[i][3];
+	 assign cmoa[i][3] = eoa[i];
+	 assign cmoa[i][3] = eoa4[i];
+	 
+	 assign lo0[i] = cmo0[i][4];
+	 assign lo1[i] = cmo1[i][4];
+	 assign lo2[i] = cmo2[i][4];
+	 assign lo3[i] = cmo3[i][4];
+	 assign cmoa[i][4] = loa[i];
+	 assign cmoa[i][4] = loa4[i];
+
+      end
+   endgenerate
    
+
+endmodule // clos

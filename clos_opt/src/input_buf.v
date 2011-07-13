@@ -62,21 +62,26 @@ module inp_buf (/*AUTOARG*/
    output [RN-1:0] 	  deco;	// the decoded routing requests
    
    //-------------------------- control signals ---------------------------------------//
-   wire 		  rten;	               // routing enable
+   wire 		  rta;	               // the ack of the dec reg pipeline stage
    wire 		  frame_end;	       // identify the end of a frame
    wire [7:0] 		  pipe_xd, pipe_yd;    // the target address from the incoming frame
    wire [PD:0][SCN-1:0]   pd0, pd1, pd2, pd3;  // data wires for the internal pipeline satges
    wire [5:0] 		  raw_dec;             // the routing decision from the comparator
+   wire [5:0] 		  xy_dec;              // the routing decision of the XY routing algorithm
    wire [4:0] 		  dec_reg;             // the routing decision kept by C-gates
    wire 		  x_equal;             // addr x = target x
    wire 		  rt_err;              // route decoder error
    
 `ifdef ENABLE_CHANNEL_SLICING
    wire [SCN-1:0] 	  deca;	// the ack for routing requests
+   wire [SCN-1:0] 	  pda1;	// the ack for the 1st pipeline stage
+   wire [SCN-1:0] 	  acko;	// the ack from CB
    wire [PD:0][SCN-1:0]   pd4, pda, pdan, pd4an; // data wires for the internal pipeline stages
 
 `else
    wire 		  deca;	// the ack for routing requests
+   wire 		  pda1;	// the ack for the 1st pipeline stage
+   wire 		  acko;	// the ack from CB
    wire [PD:0] 		  pd4, pda, pdan, pd4an; // data wires for the internal pipeline satges
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
    wire 		  decan;
@@ -110,7 +115,6 @@ module inp_buf (/*AUTOARG*/
 	       );
 	 
       end // block: SC
-      
 
 `else // !`ifdef ENABLE_CHANNEL_SLICING
       pipe4 #(.DW(DW))
@@ -139,13 +143,19 @@ module inp_buf (/*AUTOARG*/
    end // block: DP
    endgenerate
 
-   generate for(i=1; i<PD; i++) begin: DPA
+   generate for(i=2; i<PD; i++) begin: DPA
       assign pdan[i] = rst_n ? ~(pda[i]|pd4[i-1]) : 0;
       assign pd4an[i] = pdan[i];
    end
+
+      if(PD>1)
+	assign ia = pda[PD]|pd4[PD-1];
+      else
+	assign ia = pda1;
+      
    endgenerate
 
-   assign ia = pda[PD]|pd4[PD-1];
+   //assign ia = pda[PD]|pd4[PD-1];
    assign pd0[PD] = i0;
    assign pd1[PD] = i1;
    assign pd2[PD] = i2;
@@ -159,22 +169,22 @@ module inp_buf (/*AUTOARG*/
    
    //---------------------------- route decoder related -------------------------- //
    // fetch the x and y target
-   and Px_0 (pipe_xd[0], rten, pd0[1][0]);
-   and Px_1 (pipe_xd[1], rten, pd1[1][0]);
-   and Px_2 (pipe_xd[2], rten, pd2[1][0]);
-   and Px_3 (pipe_xd[3], rten, pd3[1][0]);
-   and Px_4 (pipe_xd[4], rten, pd0[1][1]);
-   and Px_5 (pipe_xd[5], rten, pd1[1][1]);
-   and Px_6 (pipe_xd[6], rten, pd2[1][1]);
-   and Px_7 (pipe_xd[7], rten, pd3[1][1]);
-   and Py_0 (pipe_yd[0], rten, pd0[1][2]);
-   and Py_1 (pipe_yd[1], rten, pd1[1][2]);
-   and Py_2 (pipe_yd[2], rten, pd2[1][2]);
-   and Py_3 (pipe_yd[3], rten, pd3[1][2]);
-   and Py_4 (pipe_yd[4], rten, pd0[1][3]);
-   and Py_5 (pipe_yd[5], rten, pd1[1][3]);
-   and Py_6 (pipe_yd[6], rten, pd2[1][3]);
-   and Py_7 (pipe_yd[7], rten, pd3[1][3]);
+   and Px_0 (pipe_xd[0], ~rta, pd0[1][0]);
+   and Px_1 (pipe_xd[1], ~rta, pd1[1][0]);
+   and Px_2 (pipe_xd[2], ~rta, pd2[1][0]);
+   and Px_3 (pipe_xd[3], ~rta, pd3[1][0]);
+   and Px_4 (pipe_xd[4], ~rta, pd0[1][1]);
+   and Px_5 (pipe_xd[5], ~rta, pd1[1][1]);
+   and Px_6 (pipe_xd[6], ~rta, pd2[1][1]);
+   and Px_7 (pipe_xd[7], ~rta, pd3[1][1]);
+   and Py_0 (pipe_yd[0], ~rta, pd0[1][2]);
+   and Py_1 (pipe_yd[1], ~rta, pd1[1][2]);
+   and Py_2 (pipe_yd[2], ~rta, pd2[1][2]);
+   and Py_3 (pipe_yd[3], ~rta, pd3[1][2]);
+   and Py_4 (pipe_yd[4], ~rta, pd0[1][3]);
+   and Py_5 (pipe_yd[5], ~rta, pd1[1][3]);
+   and Py_6 (pipe_yd[6], ~rta, pd2[1][3]);
+   and Py_7 (pipe_yd[7], ~rta, pd3[1][3]);
 
    
    routing_decision      // the comparator
@@ -186,16 +196,21 @@ module inp_buf (/*AUTOARG*/
        ,.decision  ( raw_dec )
        );
 
-   // keep the routing decision until the tail flit is received by all sub-channels
-   c2p C_RTD0  ( .b(raw_dec[0]),      .a((~frame_end)&rst_n),    .q(dec_reg[0]));
-   c2p C_RTD1  ( .b(raw_dec[1]),      .a((~frame_end)&rst_n),    .q(dec_reg[1]));
-   c2p C_RT_XEQ (.b(raw_dec[2]),      .a((~frame_end)&rst_n),    .q(x_equal) );
-   c2p C_RTD2  ( .b(raw_dec[3]),      .a(x_equal),               .q(dec_reg[2]));
-   c2p C_RTD3  ( .b(raw_dec[4]),      .a(x_equal),               .q(dec_reg[3]));
-   c2p C_RTD4  ( .b(raw_dec[5]),      .a(x_equal),               .q(dec_reg[4]));
+   // translate it into the XY dec; not QDI here as the circuit can be slow
+   assign xy_dec[1:0] = raw_dec[1:0];
+   assign xy_dec[4:2] = raw_dec[2] ? raw_dec[5:3] : 0;
+   
+   // the decoded routing requests
+   pipen #(.DW(RN))
+   PDEC (
+	 .d_in_a  ( rta      ),
+	 .d_out   ( dec_reg  ),
+	 .d_in    ( raw_dec  ),
+	 .d_out_a ( xy_dec   )
+	 );
 
    // generate the arbiter request signals
-   assign arb_r = 
+   assign deco = 
 		  DIR == 0 ? {dec_reg[4],dec_reg[2],dec_reg[1],dec_reg[3]} :   // south port
                   DIR == 1 ? {dec_reg[4],dec_reg[2]}                       :   // west port
                   DIR == 2 ? {dec_reg[4],dec_reg[2],dec_reg[3],dec_reg[0]} :   // north port
@@ -210,24 +225,36 @@ module inp_buf (/*AUTOARG*/
                   DIR == 3 ? |{dec_reg[0],dec_reg[1],dec_reg[2]}  :   // east port
                              |{dec_reg[4]}                        ;   // local port
 
-   or IP_RTACK (rt_ack, rt_err, arb_ra);
-
    // ------------------------ pipeline control ------------------------------ //
    
 `ifdef ENABLE_CHANNEL_SLICING
    for(j=0; j<SCN; j++) begin: SC
       // the sub-channel controller
-      subc_ctl SCH_C (
-		      .nack     ( pdan[0][j]  ),
-		      .rt_rst   ( rtrst[j]    ),
-		      .ai2cb    ( oa[j]       ),
-		      .ack      ( pda[1][j]   ),
-		      .eof      ( pd4[0][j]   ),
-		      .rt_ra    ( rt_ack      ),
-		      .rt_err   ( rt_err      ),
-		      .rst_n    ( rst_n       )
-		      );
+      ppc SCH_C (
+		 .nack     ( pdan[0][j]  ),
+		 .rt_rst   ( rtrst[j]    ),
+		 .ai2cb    ( oa[j]       ),
+		 .ack      ( pda[1][j]   ),
+		 .eof      ( pd4[0][j]   ),
+		 .rt_ra    ( rt_ack      ),
+		 .rt_err   ( rt_err      ),
+		 .rst_n    ( rst_n       )
+		 );
       assign pd4an[0][j] = pdan[0][j];
+
+      ppc SCH_C (
+		 .deca     ( deca[j]    ),
+		 .dia      ( pda1[j]    ),
+		 .eof      ( pd4[0][j]  ),
+		 .doa      ( acko[j]|(pda[0][j]&rt_err) ),  // to handle faulty frames
+		 .dec      ( rta        )
+		 );
+ `ifdef ENABLE_LOOKAHEAD
+      c2n CD (.q(acko[j]), .a(oa[j]), .b(pda[0][j])); // the C2N gate to avoid early withdrawal
+ `else
+      assign acko = ai2cb;
+ `endif
+      
    end // block: SC
 `else // !`ifdef ENABLE_CHANNEL_SLICING
    subc_ctl SCH_C (

@@ -143,11 +143,13 @@ module inp_buf (/*AUTOARG*/
    end // block: DP
    endgenerate
 
-   generate for(i=2; i<PD; i++) begin: DPA
-      assign pdan[i] = rst_n ? ~(pda[i]|pd4[i-1]) : 0;
-      assign pd4an[i] = pdan[i];
-   end
+   generate 
+      for(i=2; i<PD; i++) begin: DPA
+	 assign pdan[i] = rst_n ? ~(pda[i]|pd4[i-1]) : 0;
+	 assign pd4an[i] = pdan[i];
+      end
 
+      // in case only one pipeline stage is configured
       if(PD>1)
 	assign ia = pda[PD]|pd4[PD-1];
       else
@@ -189,11 +191,11 @@ module inp_buf (/*AUTOARG*/
    
    routing_decision      // the comparator
    RTD(
-       .addrx      ( addrx   )
-       ,.addry     ( addry   )
-       ,.pipe_xd   ( pipe_xd )
-       ,.pipe_yd   ( pipe_yd )
-       ,.decision  ( raw_dec )
+       .addrx     ( addrx   ),
+       .addry     ( addry   ),
+       .pipe_xd   ( pipe_xd ),
+       .pipe_yd   ( pipe_yd ),
+       .decision  ( raw_dec )
        );
 
    // translate it into the XY dec; not QDI here as the circuit can be slow
@@ -205,9 +207,11 @@ module inp_buf (/*AUTOARG*/
    PDEC (
 	 .d_in_a  ( rta      ),
 	 .d_out   ( dec_reg  ),
-	 .d_in    ( raw_dec  ),
-	 .d_out_a ( xy_dec   )
+	 .d_in    ( xy_dec   ),
+	 .d_out_a ( decan    )
 	 );
+
+   assign decan = ~(&deca);
 
    // generate the arbiter request signals
    assign deco = 
@@ -231,49 +235,52 @@ module inp_buf (/*AUTOARG*/
    for(j=0; j<SCN; j++) begin: SC
       // the sub-channel controller
       ppc SCH_C (
-		 .nack     ( pdan[0][j]  ),
-		 .rt_rst   ( rtrst[j]    ),
-		 .ai2cb    ( oa[j]       ),
-		 .ack      ( pda[1][j]   ),
-		 .eof      ( pd4[0][j]   ),
-		 .rt_ra    ( rt_ack      ),
-		 .rt_err   ( rt_err      ),
-		 .rst_n    ( rst_n       )
-		 );
-      assign pd4an[0][j] = pdan[0][j];
-
-      ppc SCH_C (
 		 .deca     ( deca[j]    ),
 		 .dia      ( pda1[j]    ),
 		 .eof      ( pd4[0][j]  ),
 		 .doa      ( acko[j]|(pda[0][j]&rt_err) ),  // to handle faulty frames
 		 .dec      ( rta        )
 		 );
+
+      // the lookahead pipeline
  `ifdef ENABLE_LOOKAHEAD
       c2n CD (.q(acko[j]), .a(oa[j]), .b(pda[0][j])); // the C2N gate to avoid early withdrawal
  `else
-      assign acko = ai2cb;
+      assign acko[j] = oa[j];
  `endif
-      
+
+      // the ack lines for the last two pipeline stages
+      assign pdan[0][j] = (~oa[j])&rst_n;
+      assign pda4n[0][j] = (~deca[j])&rst_n;
+      assign pdan[1][j] = (~pda1[j])&rst_n;
+      assign pda4n[1][j] = pdan[1][j];
+ 
    end // block: SC
 `else // !`ifdef ENABLE_CHANNEL_SLICING
-   subc_ctl SCH_C (
-		   .nack     ( pdan[0]  ),
-		   .rt_rst   ( rtrst    ),
-		   .ai2cb    ( oa       ),
-		   .ack      ( pda[1]   ),
-		   .eof      ( pd4[0]   ),
-		   .rt_ra    ( rt_ack   ),
-		   .rt_err   ( rt_err   ),
-		   .rst_n    ( rst_n    )
-		   );
-   assign pd4an[0] = pdan[0];
+   ppc SCH_C (
+	      .deca     ( deca    ),
+	      .dia      ( pda1    ),
+	      .eof      ( pd4[0]  ),
+	      .doa      ( acko|(pda[0]&rt_err) ),  // to handle faulty frames
+	      .dec      ( rta     )
+	      );
+   
+   // the lookahead pipeline
+ `ifdef ENABLE_LOOKAHEAD
+   c2n CD (.q(acko), .a(oa), .b(pda[0])); // the C2N gate to avoid early withdrawal
+ `else
+   assign acko = oa;
+ `endif
+   
+   // the ack lines for the last two pipeline stages
+   assign pdan[0] = (~oa)&rst_n;
+   assign pda4n[0] = (~deca)&rst_n;
+   assign pdan[1] = (~pda1)&rst_n;
+   assign pda4n[1] = pdan[1];
+   
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
    
-   // the router controller part
-   assign rten = ~rt_ack;
-   assign frame_end = &rtrst;
-
+   
 endmodule // inp_buf
 
 

@@ -20,7 +20,17 @@
 // the router structure definitions
 `include "define.v"
 
-module clos (/*AUTOARG*/);
+module clos (/*AUTOARG*/
+   // Outputs
+   so0, so1, so2, so3, wo0, wo1, wo2, wo3, no0, no1, no2, no3, eo0,
+   eo1, eo2, eo3, lo0, lo1, lo2, lo3, so4, wo4, no4, eo4, lo4, sia,
+   wia, nia, eia, lia,
+   // Inputs
+   si0, si1, si2, si3, wi0, wi1, wi2, wi3, ni0, ni1, ni2, ni3, ei0,
+   ei1, ei2, ei3, li0, li1, li2, li3, si4, wi4, ni4, ei4, li4, soa,
+   woa, noa, eoa, loa, soa4, woa4, noa4, eoa4, loa4, sdec, ndec, ldec,
+   wdec, edec
+   );
    
    parameter MN = 2;		// number of CMs
    parameter NN = 2;		// number of ports in an IM or OM, equ. to number of virtual circuits
@@ -44,17 +54,17 @@ module clos (/*AUTOARG*/);
    output [NN-1:0][SCN-1:0]    so4, wo4, no4, eo4, lo4;
    output [NN-1:0][SCN-1:0]    sia, wia, nia, eia, lia;
    input [NN-1:0][SCN-1:0]     soa, woa, noa, eoa, loa;
- `ifdef ENABLE_BUFFERED_CLOS
+// `ifdef ENABLE_BUFFERED_CLOS
    input [NN-1:0][SCN-1:0]     soa4, woa4, noa4, eoa4, loa4; // the eof ack from output buffers
- `endif
+// `endif
 `else
    input [NN-1:0] 	       si4, wi4, ni4, ei4, li4;
    output [NN-1:0] 	       so4, wo4, no4, eo4, lo4;
    output [NN-1:0] 	       sia, wia, nia, eia, lia;
    input [NN-1:0] 	       soa, woa, noa, eoa, loa;
- `ifdef ENABLE_BUFFERED_CLOS
+// `ifdef ENABLE_BUFFERED_CLOS
    input [NN-1:0] 	       soa4, woa4, noa4, eoa4, loa4; // the eof ack from output buffers
- `endif
+// `endif
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
 
    input [NN-1:0][3:0] 	       sdec, ndec, ldec; // the routing requests

@@ -29,7 +29,7 @@ module clos (/*AUTOARG*/
    si0, si1, si2, si3, wi0, wi1, wi2, wi3, ni0, ni1, ni2, ni3, ei0,
    ei1, ei2, ei3, li0, li1, li2, li3, si4, wi4, ni4, ei4, li4, soa,
    woa, noa, eoa, loa, soa4, woa4, noa4, eoa4, loa4, sdec, ndec, ldec,
-   wdec, edec
+   wdec, edec, rst_n
    );
    
    parameter MN = 2;		// number of CMs
@@ -69,6 +69,8 @@ module clos (/*AUTOARG*/
 
    input [NN-1:0][3:0] 	       sdec, ndec, ldec; // the routing requests
    input [NN-1:0][1:0]         wdec, edec;	 // the routing requests
+
+   input 		       rst_n; // global active low reset
 
    genvar 		       i,j;
 

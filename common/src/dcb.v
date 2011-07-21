@@ -49,6 +49,9 @@ module dcb (
 `else
    output [NN-1:0] 		 ia, o4; // eof and ack
    input [MN-1:0] 		 oa, i4;
+ `ifdef ENABLE_BUFFERED_CLOS
+   input [MN-1:0] 		 oa4; // the eof ack from output buffer
+ `endif
 `endif
 
    input [MN-1:0][NN-1:0] 	 cfg; // crossbar configuration

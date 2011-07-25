@@ -67,7 +67,7 @@ module inp_buf (/*AUTOARG*/
    wire [7:0] 		  pipe_xd, pipe_yd;    // the target address from the incoming frame
    wire [PD:0][SCN-1:0]   pd0, pd1, pd2, pd3;  // data wires for the internal pipeline satges
    wire [5:0] 		  raw_dec;             // the routing decision from the comparator
-   wire [5:0] 		  xy_dec;              // the routing decision of the XY routing algorithm
+   wire [4:0] 		  xy_dec;              // the routing decision of the XY routing algorithm
    wire [4:0] 		  dec_reg;             // the routing decision kept by C-gates
    wire 		  x_equal;             // addr x = target x
    wire 		  rt_err;              // route decoder error
@@ -82,7 +82,7 @@ module inp_buf (/*AUTOARG*/
    wire 		  deca;	// the ack for routing requests
    wire 		  pda1;	// the ack for the 1st pipeline stage
    wire 		  acko;	// the ack from CB
-   wire [PD:0] 		  pd4, pda, pdan, pd4an; // data wires for the internal pipeline satges
+   wire [PD:0] 		  pd4, pda, pdan, pda4n; // data wires for the internal pipeline satges
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
    wire 		  decan;
 
@@ -111,7 +111,7 @@ module inp_buf (/*AUTOARG*/
 	       .d_in_a  (             ),
 	       .d_out   ( pd4[i][j]   ),
 	       .d_in    ( pd4[i+1][j] ),
-	       .d_out_a ( pd4an[i][j] )
+	       .d_out_a ( pda4n[i][j] )
 	       );
 	 
       end // block: SC
@@ -136,7 +136,7 @@ module inp_buf (/*AUTOARG*/
 	    .d_in_a  (          ),
 	    .d_out   ( pd4[i]   ),
 	    .d_in    ( pd4[i+1] ),
-	    .d_out_a ( pd4an[i] )
+	    .d_out_a ( pda4n[i] )
 	    );
       
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
@@ -146,7 +146,7 @@ module inp_buf (/*AUTOARG*/
    generate 
       for(i=2; i<PD; i++) begin: DPA
 	 assign pdan[i] = rst_n ? ~(pda[i]|pd4[i-1]) : 0;
-	 assign pd4an[i] = pdan[i];
+	 assign pda4n[i] = pdan[i];
       end
 
       // in case only one pipeline stage is configured
@@ -203,7 +203,7 @@ module inp_buf (/*AUTOARG*/
    assign xy_dec[4:2] = raw_dec[2] ? raw_dec[5:3] : 0;
    
    // the decoded routing requests
-   pipen #(.DW(RN))
+   pipen #(.DW(5))
    PDEC (
 	 .d_in_a  ( rta      ),
 	 .d_out   ( dec_reg  ),

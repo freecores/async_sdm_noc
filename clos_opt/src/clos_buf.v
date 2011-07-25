@@ -62,15 +62,42 @@ module clos (/*AUTOARG*/
    output [NN-1:0] 	       so4, wo4, no4, eo4, lo4;
    output [NN-1:0] 	       sia, wia, nia, eia, lia;
    input [NN-1:0] 	       soa, woa, noa, eoa, loa;
-// `ifdef ENABLE_BUFFERED_CLOS
    input [NN-1:0] 	       soa4, woa4, noa4, eoa4, loa4; // the eof ack from output buffers
-// `endif
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
 
    input [NN-1:0][3:0] 	       sdec, ndec, ldec; // the routing requests
    input [NN-1:0][1:0]         wdec, edec;	 // the routing requests
 
    input 		       rst_n; // global active low reset
+
+   wire [MN-1:0][SCN-1:0]      sim0, sim1, sim2, sim3;
+   wire [MN-1:0][SCN-1:0]      wim0, wim1, wim2, wim3;
+   wire [MN-1:0][SCN-1:0]      nim0, nim1, nim2, nim3;
+   wire [MN-1:0][SCN-1:0]      eim0, eim1, eim2, eim3;
+   wire [MN-1:0][SCN-1:0]      lim0, lim1, lim2, lim3;
+   wire [MN-1:0][4:0][SCN-1:0] cmi0, cmi1, cmi2, cmi3;
+   wire [MN-1:0][4:0][SCN-1:0] cmo0, cmo1, cmo2, cmo3;
+
+`ifdef ENABLE_CHANNEL_SLICING
+   wire [MN-1:0][SCN-1:0]      sim4, wim4, nim4, eim4, lim4;
+   wire [MN-1:0][SCN-1:0]      sima, wima, nima, eima, lima;
+   wire [NN-1:0][SCN-1:0]      soa4, woa4, noa4, eoa4, loa4;
+   wire [MN-1:0][4:0][SCN-1:0] cmo4;
+`else
+   wire [MN-1:0] 	       sim4, wim4, nim4, eim4, lim4;
+   wire [MN-1:0] 	       sima, wima, nima, eima, lima;
+   wire [NN-1:0] 	       soa4, woa4, noa4, eoa4, loa4;
+   wire [MN-1:0][4:0] 	       cmo4;
+`endif // !`ifdef ENABLE_CHANNEL_SLICING
+   
+   wire [MN-1:0][3:0] 	       simdec, nimdec, limdec; // the routing requests
+   wire [MN-1:0][1:0] 	       wimdec, eimdec;	 // the routing requests
+
+`ifndef ENABLE_CRRD
+   wire [MN-1:0][3:0] 	       sims, nims, lims;
+   wire [MN-1:0][1:0] 	       wims, eims;
+   wire [MN-1:0][4:0] 	       cms;
+`endif	       
 
    genvar 		       i,j;
 
@@ -227,28 +254,28 @@ module clos (/*AUTOARG*/
 
 	 cm #(.KN(5), .DW(DW))
 	 CMSW (
-	       .do0   ( cmo0[i]  ),
-	       .do1   ( cmo1[i]  ),
-	       .do2   ( cmo2[i]  ),
-	       .do3   ( cmo3[i]  ),
-	       .dia   ( cmia[i]  ),
-	       .do4   ( cmo4[i]  ),
-	       .di0   ( cmi0[i]  ),
-	       .di1   ( cmi1[i]  ),
-	       .di2   ( cmi2[i]  ),
-	       .di3   ( cmi3[i]  ),
-	       .sdec  ( sdec[i]  ),
-	       .ndec  ( ndec[i]  ),
-	       .ldec  ( ldec[i]  ),
-	       .wdec  ( wdec[i]  ),
-	       .edec  ( edec[i]  ),
-	       .di4   ( cmi4[i]  ),
-	       .doa   ( cmoa[i]  ),
-	       .doa4  ( cmoa4[i] ),
+	       .do0   ( cmo0[i]   ),
+	       .do1   ( cmo1[i]   ),
+	       .do2   ( cmo2[i]   ),
+	       .do3   ( cmo3[i]   ),
+	       .dia   ( cmia[i]   ),
+	       .do4   ( cmo4[i]   ),
+	       .di0   ( cmi0[i]   ),
+	       .di1   ( cmi1[i]   ),
+	       .di2   ( cmi2[i]   ),
+	       .di3   ( cmi3[i]   ),
+	       .sdec  ( simdec[i] ),
+	       .ndec  ( nimdec[i] ),
+	       .ldec  ( limdec[i] ),
+	       .wdec  ( wimdec[i] ),
+	       .edec  ( eimdec[i] ),
+	       .di4   ( cmi4[i]   ),
+	       .doa   ( cmoa[i]   ),
+	       .doa4  ( cmoa4[i]  ),
 `ifndef ENABLE_CRRD
-	       .cms   ( cms[i]   ),
+	       .cms   ( cms[i]    ),
 `endif
-	       .rst_n ( rst_n    )
+	       .rst_n ( rst_n     )
 	       );
 	 
 	 assign so0[i] = cmo0[i][0];
@@ -285,6 +312,12 @@ module clos (/*AUTOARG*/
 	 assign lo3[i] = cmo3[i][4];
 	 assign cmoa[i][4] = loa[i];
 	 assign cmoa[i][4] = loa4[i];
+
+	 assign sims[i] = {cms[i][4],cms[i][3],cms[i][2],cms[i][1]};
+	 assign wims[i] = {cms[i][4],cms[i][3]};
+	 assign nims[i] = {cms[i][4],cms[i][3],cms[i][1],cms[i][0]};
+	 assign eims[i] = {cms[i][4],cms[i][1]};
+	 assign lims[i] = {cms[i][3],cms[i][2],cms[i][1],cms[i][0]};
 
       end
    endgenerate

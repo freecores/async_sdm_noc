@@ -87,11 +87,13 @@ module router(/*AUTOARG*/
    wire [VCN-1:0][SCN-1:0] 	 c2s4, c2w4, c2n4, c2e4, c2l4;
    wire [VCN-1:0][SCN-1:0] 	 s2ca, w2ca, n2ca, e2ca, l2ca;
    wire [VCN-1:0][SCN-1:0] 	 c2sa, c2wa, c2na, c2ea, c2la;
+   wire [VCN-1:0][SCN-1:0] 	 c2sa4, c2wa4, c2na4, c2ea4, c2la4;
 `else
    wire [VCN-1:0] 		 s2c4, w2c4, n2c4, e2c4, l2c4;
    wire [VCN-1:0] 		 c2s4, c2w4, c2n4, c2e4, c2l4;
    wire [VCN-1:0] 		 s2ca, w2ca, n2ca, e2ca, l2ca;
    wire [VCN-1:0] 		 c2sa, c2wa, c2na, c2ea, c2la;
+   wire [VCN-1:0] 		 c2sa4, c2wa4, c2na4, c2ea4, c2la4;
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
 
    // the requests/acks from/to input buffers to switch allocators

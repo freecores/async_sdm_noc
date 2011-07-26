@@ -81,13 +81,15 @@ module clos (/*AUTOARG*/
 `ifdef ENABLE_CHANNEL_SLICING
    wire [MN-1:0][SCN-1:0]      sim4, wim4, nim4, eim4, lim4;
    wire [MN-1:0][SCN-1:0]      sima, wima, nima, eima, lima;
+   wire [MN-1:0][SCN-1:0]      sima4, wima4, nima4, eima4, lima4;
    wire [NN-1:0][SCN-1:0]      soa4, woa4, noa4, eoa4, loa4;
-   wire [MN-1:0][4:0][SCN-1:0] cmo4;
+   wire [MN-1:0][4:0][SCN-1:0] cmo4, cmi4, cmia, cmoa, cmoa4;
 `else
    wire [MN-1:0] 	       sim4, wim4, nim4, eim4, lim4;
    wire [MN-1:0] 	       sima, wima, nima, eima, lima;
+   wire [MN-1:0] 	       sima4, wima4, nima4, eima4, lima4;
    wire [NN-1:0] 	       soa4, woa4, noa4, eoa4, loa4;
-   wire [MN-1:0][4:0] 	       cmo4;
+   wire [MN-1:0][4:0] 	       cmo4, cmi4, cmia, cmoa, cmoa4;
 `endif // !`ifdef ENABLE_CHANNEL_SLICING
    
    wire [MN-1:0][3:0] 	       simdec, nimdec, limdec; // the routing requests
@@ -283,35 +285,35 @@ module clos (/*AUTOARG*/
 	 assign so2[i] = cmo2[i][0];
 	 assign so3[i] = cmo3[i][0];
 	 assign cmoa[i][0] = soa[i];
-	 assign cmoa[i][0] = soa4[i];
+	 assign cmoa4[i][0] = soa4[i];
 	 
 	 assign wo0[i] = cmo0[i][1];
 	 assign wo1[i] = cmo1[i][1];
 	 assign wo2[i] = cmo2[i][1];
 	 assign wo3[i] = cmo3[i][1];
 	 assign cmoa[i][1] = woa[i];
-	 assign cmoa[i][1] = woa4[i];
+	 assign cmoa4[i][1] = woa4[i];
 	 
 	 assign no0[i] = cmo0[i][2];
 	 assign no1[i] = cmo1[i][2];
 	 assign no2[i] = cmo2[i][2];
 	 assign no3[i] = cmo3[i][2];
 	 assign cmoa[i][2] = noa[i];
-	 assign cmoa[i][2] = noa4[i];
+	 assign cmoa4[i][2] = noa4[i];
 	 
 	 assign eo0[i] = cmo0[i][3];
 	 assign eo1[i] = cmo1[i][3];
 	 assign eo2[i] = cmo2[i][3];
 	 assign eo3[i] = cmo3[i][3];
 	 assign cmoa[i][3] = eoa[i];
-	 assign cmoa[i][3] = eoa4[i];
+	 assign cmoa4[i][3] = eoa4[i];
 	 
 	 assign lo0[i] = cmo0[i][4];
 	 assign lo1[i] = cmo1[i][4];
 	 assign lo2[i] = cmo2[i][4];
 	 assign lo3[i] = cmo3[i][4];
 	 assign cmoa[i][4] = loa[i];
-	 assign cmoa[i][4] = loa4[i];
+	 assign cmoa4[i][4] = loa4[i];
 
 	 assign sims[i] = {cms[i][4],cms[i][3],cms[i][2],cms[i][1]};
 	 assign wims[i] = {cms[i][4],cms[i][3]};

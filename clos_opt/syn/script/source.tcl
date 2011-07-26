@@ -20,6 +20,7 @@ analyze -format verilog   ../../common/src/cell_lib.v
 analyze -format verilog   ../../common/src/ctree.v
 analyze -format sverilog  ../../common/src/dcb.v
 analyze -format sverilog  ../../common/src/dcb_xy.v
+analyze -format sverilog  ../../common/src/cb.v
 analyze -format sverilog  ../../common/src/mnma.v
 analyze -format sverilog  ../../common/src/mrma.v
 analyze -format verilog   ../../common/src/mutex_arb.v

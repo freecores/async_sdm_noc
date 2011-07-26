@@ -30,7 +30,7 @@
 */
 
 // if VCN > 1, set ENABLE_CLOS to use the 2-stage Clos switch for less switching area
-// `define ENABLE_CLOS
+`define ENABLE_CLOS
 
 // Using the asynchronous virsion of the Concurrent round-robine dispatching
 // algorithm for the 2-stage Clos can save some area but introduce a 5%

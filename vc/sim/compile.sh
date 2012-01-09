@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Asynchronous SDM NoC
-# (C)2011 Wei Song
+# (C)2012 Wei Song
 # Advanced Processor Technologies Group
 # Computer Science, the Univ. of Manchester, UK
 # 
@@ -29,7 +29,7 @@ rm *.so
 # compile verilog files
 # cell library
 ncvlog -nowarn RECOMP ../../lib/NangateOpenCellLibrary_typical_conditional.v
-# synthesized design
+# the synthesised netlist, available after synthesis
 ncvlog ../syn/file/router_syn.v
 # other verilog test bench files
 ncvlog     -incdir ../ ../../common/tb/anaproc.v

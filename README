@@ -91,9 +91,11 @@ How to run:
   * to run post-synthesis simulation
     1. check the netlists in [sdm/vc]/syn/file/
     2. modify the testbench configuration "define.h" according to your requirements.
+       Especially make sure the following are matched (at least in the SDM routers):
+         ChBW = DW/8; SubChN = VCN
     3. make sure your NC-Simulator is installed alright (proper SystemC support).
     4. run the compilation at [sdm/vc]/sim
-       compile.tcl
+       compile.sh
     5. run the simulation at [sdm/vc]/sim
        ncsim -tcl noctb
     6. the simulation output files are *.ana at [sdm/vc]/sim

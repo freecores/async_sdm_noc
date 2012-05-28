@@ -108,8 +108,23 @@ How to run:
     the wormhole/SDM router.
 
 For any questions and bug reports,
-    please email to Wei Song from wsong83@gmail.com
+    please email to Wei Song through <wsong83@gmail.com>.
 
 Wei Song
 08/06/2011
+
+=================================================
+Known issues:
+* 28/05/2012     reported by Zhou, Peiyuan
+    The Nangate_typ.db in ./lib/ is precompiled using DC_vC2009.06-SP2.
+    If lower versions of DC is used to synthesize the project, DC may fail to load 
+  this cell library and request a higher version.
+    In this case, you need to recompile the Nangate Cell library from the original
+  Liberty cell library provided in the Nangate 45nm open cell library PDK. There are
+  three lib formats provided in the Nangate library: ccs, ecsm and nldm. The ccs and 
+  ecsm formats provide more accurate delay infomation than nldm, so please use those
+  two whenever possible. For asynchronous circuits, the typical corner is used in 
+  most cases.
+    If you do not know how to compile a libarty library in DC, read the man page for
+  commands "read_lib" and "write_lib" in DC.
        

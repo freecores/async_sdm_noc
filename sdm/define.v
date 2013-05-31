@@ -31,7 +31,7 @@
 // if VCN > 1, set ENABLE_CLOS to use the 2-stage Clos switch for less switching area
 // `define ENABLE_CLOS
 
-// Using the asynchronous virsion of the Concurrent round-robine dispatching
+// Using the asynchronous version of the Concurrent round-robin dispatching
 // algorithm for the 2-stage Clos can save some area but introduce a 5%
 // throughput loss
 // `define ENABLE_CRRD
@@ -44,7 +44,7 @@
 // set to enable channel slicing for fast data paths
 // `define ENABLE_CHANNEL_SLICING
 
-// set to use the early acknowledge of lokkahead pipelines in the critical cycle
+// set to use the early acknowledge of lookahead pipelines in the critical cycle
 // `define ENABLE_LOOKAHEAD
 
 // always set in wormhole and SDM routers to enable the eof bit in data pipeline stages
